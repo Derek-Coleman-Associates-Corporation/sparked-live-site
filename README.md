@@ -49,6 +49,7 @@ re-running the workflow — no code change needed.
 |---|---|
 | `NETWORK_STATUS` | `prelaunch` (default) or `live` — see above |
 | `SITE_DOMAIN` | Custom domain, e.g. `sparkedlive.com` — writes `CNAME`, canonicals, sitemap, robots |
+| `BASE_PATH` | URL prefix when served from a subpath. Currently `sparked-live-site` for the project-pages URL. **Clear it when a custom domain is set**, or links will double up |
 | `DISCORD_INVITE` | Makes the Apply buttons point at Discord instead of email |
 | `GA4_MEASUREMENT_ID` | Enables Google Analytics |
 

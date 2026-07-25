@@ -17,7 +17,8 @@ NETWORK_STATUS controls the claims the site makes:
 Never set NETWORK_STATUS=live before LIVE Backstage approval: claiming an
 affiliation we do not yet have would be inaccurate (TikTok Terms 3.2(c), 2.3(d)).
 
-Optional env: GA4_MEASUREMENT_ID, SITE_DOMAIN (writes CNAME), DISCORD_INVITE.
+Optional env: GA4_MEASUREMENT_ID, SITE_DOMAIN (writes CNAME), DISCORD_INVITE,
+BASE_PATH (URL prefix when served from a subpath, e.g. GitHub project pages).
 """
 
 import html
@@ -28,6 +29,15 @@ STATUS = os.environ.get("NETWORK_STATUS", "prelaunch").strip().lower()
 LIVE = STATUS == "live"
 DOMAIN = os.environ.get("SITE_DOMAIN", "").strip()
 BASE_URL = ("https://" + DOMAIN) if DOMAIN else ""
+# Serving from a subpath (GitHub project pages) breaks root-absolute links, so
+# every internal href is built through u(). Empty for a custom domain at apex.
+BASE_PATH = "/" + os.environ.get("BASE_PATH", "").strip().strip("/") \
+    if os.environ.get("BASE_PATH", "").strip().strip("/") else ""
+
+
+def u(path):
+    """Internal URL: u('/apply/') -> '<base>/apply/'."""
+    return BASE_PATH + path
 GA4 = os.environ.get("GA4_MEASUREMENT_ID", "").strip()
 DISCORD = os.environ.get("DISCORD_INVITE", "").strip()
 
@@ -125,15 +135,16 @@ def page(slug, title, description, body, legal=False):
 <style>%(css)s</style>%(ga)s</head>
 <body>
 <header class="site"><div class="wrap">
-<a class="brand" href="/">Sparked <span>Live</span> Network</a>
-<nav><a href="/">Home</a><a href="/apply/">Apply</a><a href="mailto:%(email)s">Contact</a></nav>
+<a class="brand" href="%(root)s">Sparked <span>Live</span> Network</a>
+<nav><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
+<a href="mailto:%(email)s">Contact</a></nav>
 </div></header>
 <main class="wrap%(legalcls)s">
 %(body)s
 </main>
 <footer class="site"><div class="wrap">
-<div class="fnav"><a href="/">Home</a><a href="/apply/">Apply</a>
-<a href="/privacy/">Privacy</a><a href="/terms/">Terms</a>
+<div class="fnav"><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
+<a href="%(uprivacy)s">Privacy</a><a href="%(uterms)s">Terms</a>
 <a href="mailto:%(email)s">%(email)s</a></div>
 <p>&copy; 2026 %(company)s &middot; A Delaware corporation &middot; %(addr)s</p>
 <p>%(disclaimer)s</p>
@@ -151,6 +162,10 @@ def page(slug, title, description, body, legal=False):
         "addr": html.escape(ADDRESS),
         "legalcls": " legal" if legal else "",
         "disclaimer": DISCLAIMER,
+        "root": u("/"),
+        "uapply": u("/apply/"),
+        "uprivacy": u("/privacy/"),
+        "uterms": u("/terms/"),
     }
     d = OUT / slug if slug else OUT
     d.mkdir(parents=True, exist_ok=True)
@@ -440,8 +455,9 @@ def main():
         "<!doctype html><html lang=en><head><meta charset=utf-8>"
         "<title>Not found — Sparked Live Network</title><style>%s</style></head>"
         "<body><main class=wrap><h1>That page doesn't exist</h1>"
-        "<p class=lede>Try the <a href='/'>home page</a> or "
-        "<a href='/apply/'>apply to join</a>.</p></main></body></html>" % CSS,
+        "<p class=lede>Try the <a href='%s'>home page</a> or "
+        "<a href='%s'>apply to join</a>.</p></main></body></html>"
+        % (CSS, u("/"), u("/apply/")),
         encoding="utf-8")
 
     if BASE_URL:
