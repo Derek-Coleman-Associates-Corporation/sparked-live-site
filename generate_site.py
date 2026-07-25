@@ -248,11 +248,18 @@ are yours.</li>
 <li><strong>Account protection.</strong> When a false strike or ban hits, a real person
 works your case through our agency support channel. We file, escalate, and keep you
 updated. <em>(Outcomes are TikTok's call; the advocacy is ours.)</em></li>
-<li><strong>PC and OBS streaming setup.</strong> We request stream-key access on your
-behalf through our partner channel, then set you up end to end &mdash; OBS, overlays,
-alerts, and gift-triggered interactions that measurably lift gifting.</li>
-<li><strong>PK battles and matchmaking.</strong> Organized matches against partners at
-your level &mdash; the fastest way to put your stream in front of a new audience.</li>
+<li><strong>Computer streaming setup (Windows or Mac).</strong> Going live from a
+computer instead of your phone gets you sharper video, on-screen alerts, and graphics.
+We request a <em>stream key</em> on your behalf through our partner channel &mdash; that
+is the code that lets your computer broadcast to TikTok &mdash; then set you up end to
+end in <strong>OBS Studio (Open Broadcaster Software)</strong>, the free streaming
+program most creators use, including overlays, alerts, and gift-triggered effects that
+measurably lift gifting.</li>
+<li><strong>PK battles and matchmaking.</strong> A <strong>PK battle</strong>
+(&ldquo;PK&rdquo; is short for <em>player knockout</em>) is a head-to-head LIVE match
+where you and another creator appear side by side and viewers send gifts to pick the
+winner. We organize matches against partners at your level &mdash; the fastest way to
+put your stream in front of an audience that has never seen you.</li>
 <li><strong>1-on-1 growth coaching.</strong> Stream structure, hook timing, gift-goal
 design, schedule strategy, and a monthly walk through your numbers.</li>
 </ul>
@@ -290,18 +297,37 @@ pool, based on overall roster performance. We are never paid out of your diamond
 <p>We will file and escalate your case through our agency support channel and stay on it.
 We cannot promise an outcome, because that decision belongs to TikTok. Any network telling
 you otherwise is overselling.</p></details>
-<details><summary>Can you get me a stream key so I can go LIVE from my PC?</summary>
-<p>We can request stream-key access on your behalf through our partner channel, and we
-will do the whole OBS setup with you once it is granted. TikTok grants keys at its own
-discretion &mdash; but the request coming from a network carries further than one from an
-individual.</p></details>
+<details><summary>Can you get me a stream key so I can go LIVE from my computer?</summary>
+<p>A stream key is the code that lets a computer broadcast to TikTok instead of streaming
+from your phone. We can request one on your behalf through our partner channel, and we
+will do the whole OBS Studio (Open Broadcaster Software) setup with you once it is
+granted. TikTok grants keys at its own discretion &mdash; but the request coming from a
+network carries further than one from an individual.</p></details>
 <details><summary>What if I stream in a language other than English?</summary>
 <p>Apply anyway and tell us. We are a U.S.-based roster, but we care about what you make,
 not what language you make it in.</p></details>
 
+<h2>Words you'll hear (and what they actually mean)</h2>
+<p>New to LIVE? Nobody explains this stuff, so here it is in plain English.</p>
+<div class="grid">
+<div class="card"><h3>Diamonds</h3><p>What the gifts your viewers send convert into.
+Diamonds are what you cash out &mdash; and 100%% of yours stay yours.</p></div>
+<div class="card"><h3>PK battle</h3><p>Short for <em>player knockout</em>. A head-to-head
+LIVE match: you and another creator side by side, viewers gifting to pick a winner.</p></div>
+<div class="card"><h3>Stream key</h3><p>A code from TikTok that lets you broadcast from a
+computer instead of your phone. TikTok grants these case by case.</p></div>
+<div class="card"><h3>OBS Studio</h3><p>Open Broadcaster Software &mdash; the free
+program most creators use to stream from a computer, with overlays and alerts.</p></div>
+<div class="card"><h3>Overlay</h3><p>Graphics layered on your stream: gift alerts, goal
+bars, top-gifter lists. They make viewers want to gift.</p></div>
+<div class="card"><h3>Valid LIVE day</h3><p>TikTok only counts a day toward network
+requirements if you streamed <strong>60+ continuous minutes</strong>.</p></div>
+</div>
+
 <h2>Ready?</h2>
 <p>Applications are reviewed by a person, and you will get a real reply &mdash; not a
-template.</p>
+template. Never streamed from a computer, never done a PK battle? That is fine &mdash;
+that is precisely what we are here to teach you.</p>
 <a class="btn" href="%(apply)s">Apply to join</a>
 """ % {"badge": badge, "h1": h1, "lede": lede, "prenote": prelaunch_note,
        "apply": html.escape(APPLY_HREF)}
@@ -321,7 +347,8 @@ def apply_body():
 <ul class="check">
 <li>Your TikTok handle</li>
 <li>Roughly how many days and hours you go LIVE in a normal month</li>
-<li>What you stream &mdash; gaming, music, chat, PK battles, something else</li>
+<li>What you stream &mdash; gaming, music, just chatting, PK battles (head-to-head
+matches against another creator), something else</li>
 <li>Whether you are currently signed with another TikTok LIVE network</li>
 <li>That you are 18 or older and based in the United States</li>
 <li>The single thing you most want help with right now</li>
@@ -438,7 +465,8 @@ def main():
     slugs = [
         page("", "Sparked Live Network — Keep 100% of Your TikTok LIVE Diamonds",
              "A U.S. TikTok LIVE creator network that takes zero percent of your gifts. "
-             "Account protection, PC/OBS setup, PK battles, and 1-on-1 coaching.",
+             "Account protection, computer streaming setup, head-to-head battles, and "
+             "one-on-one growth coaching.",
              index_body()),
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
