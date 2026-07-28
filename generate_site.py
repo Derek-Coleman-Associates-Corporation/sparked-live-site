@@ -40,6 +40,12 @@ def u(path):
     return BASE_PATH + path
 GA4 = os.environ.get("GA4_MEASUREMENT_ID", "").strip()
 DISCORD = os.environ.get("DISCORD_INVITE", "").strip()
+# POST target for the talent-manager form. GitHub Pages serves static files and
+# cannot process a form, so submission needs a third-party endpoint (Formspree,
+# Basin, Formsubmit) or our own function. Set FORM_ENDPOINT as a repo Actions
+# variable. Left empty the page degrades to a mailto link — never to a form that
+# silently drops what someone typed.
+FORM_ENDPOINT = os.environ.get("FORM_ENDPOINT", "").strip()
 
 COMPANY = "Sparked Live Network Inc."
 EMAIL = "tiktok@dcassociatesgroup.com"
@@ -99,6 +105,27 @@ summary{cursor:pointer;font-weight:600}
 details p{color:var(--muted);margin:9px 0 0}
 .note{background:var(--card);border-left:3px solid var(--accent2);padding:14px 18px;
 border-radius:0 8px 8px 0;margin:26px 0;color:var(--muted);font-size:.94rem}
+form.apply{margin:24px 0}
+form.apply .f{margin-bottom:18px}
+form.apply label{display:block;font-weight:600;margin-bottom:6px}
+form.apply .hint{display:block;font-weight:400;color:var(--muted);font-size:.88rem;
+margin-top:2px}
+form.apply input[type=text],form.apply input[type=email],form.apply input[type=tel],
+form.apply input[type=url],form.apply select,form.apply textarea{width:100%;
+padding:11px 13px;font:inherit;color:var(--fg);background:var(--bg);
+border:1px solid var(--border);border-radius:8px}
+form.apply textarea{min-height:110px;resize:vertical}
+form.apply input:focus,form.apply select:focus,form.apply textarea:focus{outline:none;
+border-color:var(--accent2);box-shadow:0 0 0 3px rgba(0,194,199,.18)}
+form.apply .consent{display:flex;gap:10px;align-items:flex-start;
+background:var(--card);padding:14px 16px;border-radius:8px}
+form.apply .consent input{margin-top:4px;flex:none}
+form.apply .consent label{font-weight:400;font-size:.93rem;margin:0}
+form.apply button{background:var(--accent);color:#fff;font:inherit;font-weight:700;
+padding:13px 26px;border:0;border-radius:999px;cursor:pointer}
+form.apply button:hover{opacity:.9}
+form.apply .hp{position:absolute;left:-9999px}
+.req{color:var(--accent)}
 footer.site{border-top:1px solid var(--border);margin-top:60px;padding:30px 0 50px;
 color:var(--muted);font-size:.89rem}
 footer.site a{color:var(--muted)}
@@ -137,13 +164,14 @@ def page(slug, title, description, body, legal=False):
 <header class="site"><div class="wrap">
 <a class="brand" href="%(root)s">Sparked <span>Live</span> Network</a>
 <nav><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
-<a href="mailto:%(email)s">Contact</a></nav>
+<a href="%(umanagers)s">Work with us</a><a href="mailto:%(email)s">Contact</a></nav>
 </div></header>
 <main class="wrap%(legalcls)s">
 %(body)s
 </main>
 <footer class="site"><div class="wrap">
 <div class="fnav"><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
+<a href="%(umanagers)s">Work with us</a>
 <a href="%(uprivacy)s">Privacy</a><a href="%(uterms)s">Terms</a>
 <a href="mailto:%(email)s">%(email)s</a></div>
 <p>&copy; 2026 %(company)s &middot; A Delaware corporation &middot; %(addr)s</p>
@@ -164,6 +192,7 @@ def page(slug, title, description, body, legal=False):
         "disclaimer": DISCLAIMER,
         "root": u("/"),
         "uapply": u("/apply/"),
+        "umanagers": u("/managers/"),
         "uprivacy": u("/privacy/"),
         "uterms": u("/terms/"),
     }
@@ -367,6 +396,139 @@ claiming to be us does any of those things, they are not us &mdash; email
 """ % {"channel": channel, "email": EMAIL}
 
 
+def manager_form():
+    """The talent-manager form, or an honest mailto fallback when unconfigured."""
+    if not FORM_ENDPOINT:
+        return ("""
+<div class="note"><strong>The form is not live yet.</strong> Until it is, email
+<a href="mailto:%(email)s?subject=Talent%%20Manager%%20Application">%(email)s</a>
+with the details below and we will reply either way.</div>
+<ul class="check">
+<li>Your name, email, and TikTok handle</li>
+<li>Whether you have managed or recruited creators before, and where</li>
+<li>Roughly how many hours a week you can commit</li>
+<li>The country and state you live in</li>
+</ul>""" % {"email": EMAIL})
+
+    return """
+<form class="apply" action="%(endpoint)s" method="POST">
+<div class="f"><label for="name">Full name <span class="req">*</span></label>
+<input id="name" name="name" type="text" autocomplete="name" required></div>
+
+<div class="f"><label for="email">Email address <span class="req">*</span>
+<span class="hint">Where we reply. Check your spam folder if you don't hear back.</span>
+</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+
+<div class="f"><label for="handle">Your TikTok username <span class="req">*</span>
+<span class="hint">The @handle, for example @sparkedlive</span></label>
+<input id="handle" name="tiktok_handle" type="text" placeholder="@" required></div>
+
+<div class="f"><label for="country">Where do you live? <span class="req">*</span>
+<span class="hint">TikTok requires managers and creators to be located in the
+network's region, so we have to ask.</span></label>
+<select id="country" name="country" required>
+<option value="">Select&hellip;</option>
+<option>United States</option>
+<option>Other</option>
+</select></div>
+
+<div class="f"><label for="role">What are you interested in? <span class="req">*</span>
+</label><select id="role" name="role" required>
+<option value="">Select&hellip;</option>
+<option>Talent manager &mdash; coaching and looking after a roster</option>
+<option>Recruiter &mdash; finding and signing new creators</option>
+<option>Both</option>
+</select></div>
+
+<div class="f"><label for="experience">Have you managed or recruited creators before?
+<span class="hint">Tell us where and roughly how many. &ldquo;No, but here's why I'd be
+good at it&rdquo; is a real answer &mdash; we read these.</span></label>
+<textarea id="experience" name="experience"></textarea></div>
+
+<div class="f"><label for="hours">Hours a week you can commit</label>
+<input id="hours" name="hours_per_week" type="text"
+placeholder="e.g. 10&ndash;15"></div>
+
+<div class="f"><label for="phone">Phone number <span class="hint">Optional. Only used
+if you ask us to call &mdash; we do not run automated texts.</span></label>
+<input id="phone" name="phone" type="tel" autocomplete="tel"></div>
+
+<div class="f"><label for="referrer">Referred by someone? Their TikTok username
+<span class="hint">Optional.</span></label>
+<input id="referrer" name="referred_by" type="text" placeholder="@"></div>
+
+<div class="f hp" aria-hidden="true">
+<label for="company_website">Leave this field empty</label>
+<input id="company_website" name="company_website" type="text" tabindex="-1"
+autocomplete="off"></div>
+
+<div class="f consent">
+<input id="consent" name="consent" type="checkbox" value="yes" required>
+<label for="consent">I am 18 or older, and I agree that %(company)s may store and use
+these details to consider my application, as described in the
+<a href="%(uprivacy)s">Privacy Policy</a>. <span class="req">*</span></label></div>
+
+<p><button type="submit">Send my details</button></p>
+</form>""" % {"endpoint": html.escape(FORM_ENDPOINT), "company": COMPANY,
+              "uprivacy": u("/privacy/")}
+
+
+def managers_body():
+    return """
+<h1>Work with us</h1>
+<p class="lede">We are looking for talent managers and recruiters &mdash; freelance,
+paid on results, working the roster you build.</p>
+
+%(form)s
+
+<h2>What the work actually is</h2>
+<p><strong>Talent manager.</strong> You look after a group of creators: help them build
+a schedule they can keep, get them set up to stream from a computer, pair them for
+head-to-head battles, and escalate problems &mdash; false strikes, bans, payment
+questions &mdash; on their behalf. The job is mostly consistency and follow-through, not
+sales.</p>
+<p><strong>Recruiter.</strong> You find creators who would be better off with support
+than without it, start a real conversation, and bring them in through TikTok's official
+invitation system. No cold-spam, no scraping, no bought lists &mdash; those break
+TikTok's rules and we will not run that way.</p>
+
+<h2>How you get paid</h2>
+<p>TikTok pays networks a monthly bonus based on how the roster performs. Managers earn
+a share of the bonus their own creators generate &mdash; so your pay tracks how well the
+people you look after actually do. We will give you the exact terms in writing before
+you start.</p>
+<div class="note"><strong>Creators keep one hundred percent of their diamonds.</strong>
+Your pay never comes out of a creator's earnings, and neither does ours. If you have
+worked somewhere that took a cut of gifts, this is not that.</div>
+
+<h2>The honest version</h2>
+<ul class="check">
+<li>This is freelance, contractor work &mdash; not employment, no salary, no benefits</li>
+<li>Pay is performance-based. A roster that does not stream earns nothing</li>
+<li>We are a new network, so you would be building from a small base</li>
+<li>You keep your own hours; nobody is tracking your screen</li>
+</ul>
+<ul class="no">
+<li>We will not ask you to pay anything to join &mdash; ever, for any reason</li>
+<li>We will not ask for your TikTok password, and neither should anyone else</li>
+<li>We will not promise you a number we cannot back up</li>
+</ul>
+
+<h2>What we need from you</h2>
+<ul class="check">
+<li>18 or older, and legally able to work as a contractor where you live</li>
+<li>Located in the region our network covers &mdash; TikTok enforces this, not us</li>
+<li>Reachable. Creators ask questions at odd hours and notice when nobody answers</li>
+<li>Straight with people. You will be the reason someone trusts us or doesn't</li>
+</ul>
+
+<div class="note"><strong>How the hiring works.</strong> You send the form, we reply
+either way, and if it looks like a fit we talk. Anyone who takes on creators signs a
+written agreement first &mdash; scope, pay, confidentiality, and how either side ends
+it. Nothing starts on a handshake.</div>
+""" % {"form": manager_form()}
+
+
 def privacy_body():
     return """
 <h1>Privacy Policy</h1>
@@ -391,6 +553,15 @@ authorized us, and you can disconnect at any time from your TikTok settings, whi
 immediately ends our access.</p>
 <p><strong>Visitors.</strong> This site collects no personal information from ordinary
 browsing. If site analytics are enabled, they measure aggregate traffic only.</p>
+
+<p><strong>Talent manager and recruiter applicants.</strong> If you submit the form on
+our <a href="%(umanagers)s">Work with us</a> page we collect your name, email address,
+TikTok username, the country you live in, the role you are interested in, and anything
+you choose to tell us about your experience and availability. A phone number and a
+referrer's username are optional; we ask for a phone number only so we can call if you
+want us to, and <strong>we do not send automated text messages</strong>. That form is
+delivered by a third-party form service, which handles the message in transit on our
+behalf and does not use it for its own purposes.</p>
 
 <h2>What we do with it</h2>
 <p>We use your information to evaluate applications, manage our roster, provide coaching
@@ -419,7 +590,8 @@ delete it.</p>
 <h2>Changes and contact</h2>
 <p>If we change this policy we will update the date above. Questions or requests:
 <a href="mailto:%(email)s">%(email)s</a>, or %(company)s, %(addr)s.</p>
-""" % {"updated": UPDATED, "company": COMPANY, "email": EMAIL, "addr": html.escape(ADDRESS)}
+""" % {"updated": UPDATED, "company": COMPANY, "email": EMAIL,
+       "addr": html.escape(ADDRESS), "umanagers": u("/managers/")}
 
 
 def terms_body():
@@ -471,6 +643,10 @@ def main():
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
              "application.", apply_body()),
+        page("managers", "Work With Us — Talent Managers and Recruiters",
+             "Freelance talent manager and recruiter roles at Sparked Live Network. "
+             "Paid on roster performance, never out of a creator's diamonds.",
+             managers_body()),
         page("privacy", "Privacy Policy — Sparked Live Network",
              "How Sparked Live Network Inc. collects, uses, and protects your "
              "information.", privacy_body(), legal=True),

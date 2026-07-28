@@ -58,6 +58,27 @@ summary{cursor:pointer;font-weight:600}
 details p{color:var(--muted);margin:9px 0 0}
 .note{background:var(--card);border-left:3px solid var(--accent2);padding:14px 18px;
 border-radius:0 8px 8px 0;margin:26px 0;color:var(--muted);font-size:.94rem}
+form.apply{margin:24px 0}
+form.apply .f{margin-bottom:18px}
+form.apply label{display:block;font-weight:600;margin-bottom:6px}
+form.apply .hint{display:block;font-weight:400;color:var(--muted);font-size:.88rem;
+margin-top:2px}
+form.apply input[type=text],form.apply input[type=email],form.apply input[type=tel],
+form.apply input[type=url],form.apply select,form.apply textarea{width:100%;
+padding:11px 13px;font:inherit;color:var(--fg);background:var(--bg);
+border:1px solid var(--border);border-radius:8px}
+form.apply textarea{min-height:110px;resize:vertical}
+form.apply input:focus,form.apply select:focus,form.apply textarea:focus{outline:none;
+border-color:var(--accent2);box-shadow:0 0 0 3px rgba(0,194,199,.18)}
+form.apply .consent{display:flex;gap:10px;align-items:flex-start;
+background:var(--card);padding:14px 16px;border-radius:8px}
+form.apply .consent input{margin-top:4px;flex:none}
+form.apply .consent label{font-weight:400;font-size:.93rem;margin:0}
+form.apply button{background:var(--accent);color:#fff;font:inherit;font-weight:700;
+padding:13px 26px;border:0;border-radius:999px;cursor:pointer}
+form.apply button:hover{opacity:.9}
+form.apply .hp{position:absolute;left:-9999px}
+.req{color:var(--accent)}
 footer.site{border-top:1px solid var(--border);margin-top:60px;padding:30px 0 50px;
 color:var(--muted);font-size:.89rem}
 footer.site a{color:var(--muted)}
@@ -68,9 +89,9 @@ footer.site .fnav a{margin-right:18px}
 </style></head>
 <body>
 <header class="site"><div class="wrap">
-<a class="brand" href="/sparked-live-site/">Sparked <span>Live</span> Network</a>
-<nav><a href="/sparked-live-site/">Home</a><a href="/sparked-live-site/apply/">Apply</a>
-<a href="mailto:tiktok@dcassociatesgroup.com">Contact</a></nav>
+<a class="brand" href="/">Sparked <span>Live</span> Network</a>
+<nav><a href="/">Home</a><a href="/apply/">Apply</a>
+<a href="/managers/">Work with us</a><a href="mailto:tiktok@dcassociatesgroup.com">Contact</a></nav>
 </div></header>
 <main class="wrap legal">
 
@@ -96,6 +117,15 @@ authorized us, and you can disconnect at any time from your TikTok settings, whi
 immediately ends our access.</p>
 <p><strong>Visitors.</strong> This site collects no personal information from ordinary
 browsing. If site analytics are enabled, they measure aggregate traffic only.</p>
+
+<p><strong>Talent manager and recruiter applicants.</strong> If you submit the form on
+our <a href="/managers/">Work with us</a> page we collect your name, email address,
+TikTok username, the country you live in, the role you are interested in, and anything
+you choose to tell us about your experience and availability. A phone number and a
+referrer's username are optional; we ask for a phone number only so we can call if you
+want us to, and <strong>we do not send automated text messages</strong>. That form is
+delivered by a third-party form service, which handles the message in transit on our
+behalf and does not use it for its own purposes.</p>
 
 <h2>What we do with it</h2>
 <p>We use your information to evaluate applications, manage our roster, provide coaching
@@ -127,8 +157,9 @@ delete it.</p>
 
 </main>
 <footer class="site"><div class="wrap">
-<div class="fnav"><a href="/sparked-live-site/">Home</a><a href="/sparked-live-site/apply/">Apply</a>
-<a href="/sparked-live-site/privacy/">Privacy</a><a href="/sparked-live-site/terms/">Terms</a>
+<div class="fnav"><a href="/">Home</a><a href="/apply/">Apply</a>
+<a href="/managers/">Work with us</a>
+<a href="/privacy/">Privacy</a><a href="/terms/">Terms</a>
 <a href="mailto:tiktok@dcassociatesgroup.com">tiktok@dcassociatesgroup.com</a></div>
 <p>&copy; 2026 Sparked Live Network Inc. &middot; A Delaware corporation &middot; 1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103</p>
 <p>Sparked Live Network Inc. is an independent talent network and is not affiliated with, endorsed by, or sponsored by TikTok. TikTok is a trademark of its respective owner.</p>
