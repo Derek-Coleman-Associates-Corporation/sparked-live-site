@@ -23,6 +23,7 @@ BASE_PATH (URL prefix when served from a subpath, e.g. GitHub project pages).
 
 import html
 import os
+import shutil
 from pathlib import Path
 
 STATUS = os.environ.get("NETWORK_STATUS", "prelaunch").strip().lower()
@@ -126,6 +127,19 @@ padding:13px 26px;border:0;border-radius:999px;cursor:pointer}
 form.apply button:hover{opacity:.9}
 form.apply .hp{position:absolute;left:-9999px}
 .req{color:var(--accent)}
+/* Vertical phone capture — constrain by HEIGHT or it swallows a desktop page. */
+figure.howto{margin:26px 0;text-align:center}
+figure.howto video{display:block;margin:0 auto;max-height:74vh;max-width:100%;
+width:auto;height:auto;border-radius:16px;border:1px solid var(--border);
+background:#000}
+figure.howto figcaption{color:var(--muted);font-size:.9rem;margin-top:12px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+ol.steps li{counter-increment:s;position:relative;padding:11px 0 11px 46px;
+border-bottom:1px solid var(--border)}
+ol.steps li:before{content:counter(s);position:absolute;left:0;top:11px;
+width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+font-size:.85rem;font-weight:700;display:flex;align-items:center;
+justify-content:center}
 footer.site{border-top:1px solid var(--border);margin-top:60px;padding:30px 0 50px;
 color:var(--muted);font-size:.89rem}
 footer.site a{color:var(--muted)}
@@ -383,6 +397,11 @@ matches against another creator), something else</li>
 <li>The single thing you most want help with right now</li>
 </ul>
 
+<div class="note"><strong>Applying from outside our official TikTok account?</strong>
+TikTok will ask you for a 6-character invitation code. It lives in the app and takes
+about thirty seconds to find &mdash; <a href="%(uinvite)s">here is a video showing
+exactly where</a>. It expires after 24 hours, so grab it when you are ready to send.</div>
+
 <h2>What happens next</h2>
 <p>We review your handle and recent LIVE activity, then reply either way &mdash; usually
 within a few days. If we are a fit, you get an invitation through TikTok's official LIVE
@@ -393,7 +412,7 @@ accept it from inside the TikTok app. Nobody will ever ask you for a password.</
 password, never charges a joining fee, and never takes a cut of your diamonds. If anyone
 claiming to be us does any of those things, they are not us &mdash; email
 <a href="mailto:%(email)s">%(email)s</a> and tell us.</div>
-""" % {"channel": channel, "email": EMAIL}
+""" % {"channel": channel, "email": EMAIL, "uinvite": u("/invitation-code/")}
 
 
 def manager_form():
@@ -471,6 +490,67 @@ these details to consider my application, as described in the
 <p><button type="submit">Send my details</button></p>
 </form>""" % {"endpoint": html.escape(FORM_ENDPOINT), "company": COMPANY,
               "uprivacy": u("/privacy/")}
+
+
+def invitation_code_body():
+    return """
+<h1>How to get your invitation code</h1>
+<p class="lede">If you are applying to a Creator Network without going through
+that network's official TikTok account, TikTok asks you for a 6-character
+invitation code. Here is where to find it &mdash; it takes about thirty seconds.</p>
+
+<figure class="howto">
+<video controls playsinline preload="none"
+       poster="%(poster)s"
+       aria-label="Screen recording showing where to find the invitation code in the TikTok app">
+<source src="%(video)s" type="video/mp4">
+<p>Your browser cannot play this video.
+<a href="%(video)s">Download it instead</a>, or follow the written steps below.</p>
+</video>
+<figcaption>Recorded in the TikTok app. The code in the video is blurred on purpose.</figcaption>
+</figure>
+
+<h2>The same steps, written down</h2>
+<ol class="steps">
+<li>Open <strong>TikTok Studio</strong> and tap the <strong>LIVE</strong> tab.</li>
+<li>Scroll down to <strong>Tools and resources</strong>.</li>
+<li>Tap <strong>Join Creator Network</strong>.</li>
+<li>Tap <strong>View how to join</strong>.</li>
+<li>Under step 2, <em>Apply to join</em>, tap the <strong>invitation code</strong> link.</li>
+<li>Your code appears &mdash; six characters, letters and numbers.</li>
+<li>Tap <strong>Copy code</strong> and send it to us.</li>
+</ol>
+
+<div class="note"><strong>Your code expires after 24 hours.</strong> The screen
+shows the exact time it runs out. If yours has lapsed, just open the same screen
+again and generate a new one &mdash; there is no limit and it costs you nothing.</div>
+
+<h2>You may not need one at all</h2>
+<p>The code is only required when you apply <em>outside</em> a network's official
+TikTok account. Apply through our official account or our application link and
+TikTok skips this step entirely. If you are not sure which you are doing, send us
+the code anyway &mdash; it does no harm.</p>
+
+<h2>What the code does, and what it doesn't</h2>
+<ul class="check">
+<li>It lets us send you a Creator Network invitation through TikTok's own system</li>
+<li>It is tied to your handle and expires on its own</li>
+</ul>
+<ul class="no">
+<li>It does not give anyone access to your account</li>
+<li>It does not sign you up for anything &mdash; you still have to accept the
+invitation inside the TikTok app, and you can decline it</li>
+</ul>
+
+<div class="note"><strong>Nobody should ever ask you for your password.</strong>
+Not us, not TikTok, not anyone claiming to work with either. The invitation code
+is the only thing we need from you, and a real network never charges a joining
+fee or takes a cut of your diamonds.</div>
+
+<p><a class="btn" href="%(uapply)s">Apply to join</a></p>
+""" % {"video": u("/assets/invitation-code-howto.mp4"),
+       "poster": u("/assets/invitation-code-howto-poster.jpg"),
+       "uapply": u("/apply/")}
 
 
 def managers_body():
@@ -643,6 +723,10 @@ def main():
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
              "application.", apply_body()),
+        page("invitation-code", "How to Get Your TikTok Invitation Code",
+             "A thirty-second walkthrough showing where the 6-character Creator "
+             "Network invitation code lives in the TikTok app, and what it does.",
+             invitation_code_body()),
         page("managers", "Work With Us — Talent Managers and Recruiters",
              "Freelance talent manager and recruiter roles at Sparked Live Network. "
              "Paid on roster performance, never out of a creator's diamonds.",
@@ -654,6 +738,12 @@ def main():
              "Terms governing use of the Sparked Live Network website.",
              terms_body(), legal=True),
     ]
+
+    # Static assets (the how-to video and its poster). Copied rather than
+    # generated, so the build stays reproducible from a clean checkout.
+    src_assets = Path(__file__).parent / "assets"
+    if src_assets.is_dir():
+        shutil.copytree(src_assets, OUT / "assets", dirs_exist_ok=True)
 
     (OUT / "404.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8>"

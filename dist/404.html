@@ -70,6 +70,19 @@ padding:13px 26px;border:0;border-radius:999px;cursor:pointer}
 form.apply button:hover{opacity:.9}
 form.apply .hp{position:absolute;left:-9999px}
 .req{color:var(--accent)}
+/* Vertical phone capture — constrain by HEIGHT or it swallows a desktop page. */
+figure.howto{margin:26px 0;text-align:center}
+figure.howto video{display:block;margin:0 auto;max-height:74vh;max-width:100%;
+width:auto;height:auto;border-radius:16px;border:1px solid var(--border);
+background:#000}
+figure.howto figcaption{color:var(--muted);font-size:.9rem;margin-top:12px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+ol.steps li{counter-increment:s;position:relative;padding:11px 0 11px 46px;
+border-bottom:1px solid var(--border)}
+ol.steps li:before{content:counter(s);position:absolute;left:0;top:11px;
+width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+font-size:.85rem;font-weight:700;display:flex;align-items:center;
+justify-content:center}
 footer.site{border-top:1px solid var(--border);margin-top:60px;padding:30px 0 50px;
 color:var(--muted);font-size:.89rem}
 footer.site a{color:var(--muted)}
