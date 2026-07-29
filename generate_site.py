@@ -48,6 +48,18 @@ DISCORD = os.environ.get("DISCORD_INVITE", "").strip()
 # silently drops what someone typed.
 FORM_ENDPOINT = os.environ.get("FORM_ENDPOINT", "").strip()
 
+# TikTok's own application link, from LIVE Backstage -> Creators -> Scout
+# creators -> "Share application info". A creator who applies through this
+# lands in Scout creators -> Creators and needs NO invitation code.
+#
+# ⚠ The `agency_scout_source` parameter on the resolved URL is ATTRIBUTION.
+# This short link is the QR-code variant (agency_scout_source=qr_code_leads),
+# so web traffic through it is reported as QR scans. Backstage's "Copy link"
+# button yields a differently-tagged link — use that one here once captured,
+# and keep this one for printed/QR use, or the source column lies.
+APPLY_LINK = os.environ.get(
+    "APPLY_LINK", "https://www.tiktok.com/t/ZTAynpxHM/").strip()
+
 COMPANY = "Sparked Live Network Inc."
 EMAIL = "tiktok@dcassociatesgroup.com"
 ADDRESS = "1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103"
@@ -384,6 +396,9 @@ def apply_body():
     return """
 <h1>Apply to Sparked Live</h1>
 <p class="lede">Two minutes. A person reads every one of these.</p>
+<p><a class="btn" href="%(applylink)s" rel="noopener">Apply on TikTok</a>
+<a class="btn alt" href="%(uinvite)s">See how it works</a></p>
+<p style="color:var(--muted);font-size:.94rem;margin-top:-2px">Goes straight to TikTok's own application form for our network. No invitation code needed.</p>
 %(channel)s
 
 <h2>Tell us this much</h2>
@@ -412,7 +427,8 @@ accept it from inside the TikTok app. Nobody will ever ask you for a password.</
 password, never charges a joining fee, and never takes a cut of your diamonds. If anyone
 claiming to be us does any of those things, they are not us &mdash; email
 <a href="mailto:%(email)s">%(email)s</a> and tell us.</div>
-""" % {"channel": channel, "email": EMAIL, "uinvite": u("/invitation-code/")}
+""" % {"channel": channel, "email": EMAIL, "uinvite": u("/invitation-code/"),
+       "applylink": html.escape(APPLY_LINK)}
 
 
 def manager_form():
@@ -494,10 +510,27 @@ these details to consider my application, as described in the
 
 def invitation_code_body():
     return """
-<h1>How to get your invitation code</h1>
-<p class="lede">If you are applying to a Creator Network without going through
-that network's official TikTok account, TikTok asks you for a 6-character
-invitation code. Here is where to find it &mdash; it takes about thirty seconds.</p>
+<h1>Apply to Sparked Live</h1>
+<p class="lede">The quickest way in is our TikTok application link. Tap it, send
+your details, and we take it from there &mdash; <strong>no invitation code
+needed</strong>.</p>
+
+<p><a class="btn" href="%(applylink)s" rel="noopener">Open the application on TikTok</a></p>
+
+<figure class="howto" style="margin-top:18px">
+<img src="%(qr)s" alt="QR code linking to the Sparked Live Network application on TikTok"
+     width="240" height="240"
+     style="width:240px;height:auto;border-radius:12px;border:1px solid var(--border);background:#fff;padding:10px">
+<figcaption>On a second device? Scan this with your phone camera or the TikTok app.</figcaption>
+</figure>
+
+<div class="note">Applying through this link means TikTok already knows which
+network you are applying to, so <strong>you can skip the invitation code
+entirely</strong>. The rest of this page is only for people who did not use it.</div>
+
+<h2>If you are applying without our link</h2>
+<p>TikTok will ask you for a 6-character invitation code. Here is where to find
+it &mdash; it takes about thirty seconds.</p>
 
 <figure class="howto">
 <video controls playsinline preload="none"
@@ -525,12 +558,6 @@ invitation code. Here is where to find it &mdash; it takes about thirty seconds.
 shows the exact time it runs out. If yours has lapsed, just open the same screen
 again and generate a new one &mdash; there is no limit and it costs you nothing.</div>
 
-<h2>You may not need one at all</h2>
-<p>The code is only required when you apply <em>outside</em> a network's official
-TikTok account. Apply through our official account or our application link and
-TikTok skips this step entirely. If you are not sure which you are doing, send us
-the code anyway &mdash; it does no harm.</p>
-
 <h2>What the code does, and what it doesn't</h2>
 <ul class="check">
 <li>It lets us send you a Creator Network invitation through TikTok's own system</li>
@@ -547,9 +574,12 @@ Not us, not TikTok, not anyone claiming to work with either. The invitation code
 is the only thing we need from you, and a real network never charges a joining
 fee or takes a cut of your diamonds.</div>
 
-<p><a class="btn" href="%(uapply)s">Apply to join</a></p>
+<p><a class="btn" href="%(applylink)s" rel="noopener">Open the application on TikTok</a>
+<a class="btn alt" href="%(uapply)s">What we look for</a></p>
 """ % {"video": u("/assets/invitation-code-howto.mp4"),
        "poster": u("/assets/invitation-code-howto-poster.jpg"),
+       "qr": u("/assets/apply-qr.png"),
+       "applylink": html.escape(APPLY_LINK),
        "uapply": u("/apply/")}
 
 
@@ -723,9 +753,10 @@ def main():
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
              "application.", apply_body()),
-        page("invitation-code", "How to Get Your TikTok Invitation Code",
-             "A thirty-second walkthrough showing where the 6-character Creator "
-             "Network invitation code lives in the TikTok app, and what it does.",
+        page("invitation-code", "Apply on TikTok — Sparked Live Network",
+             "Apply to Sparked Live Network through TikTok's own application link "
+             "— no invitation code needed. Plus a thirty-second walkthrough showing "
+             "where the invitation code lives if you need one.",
              invitation_code_body()),
         page("managers", "Work With Us — Talent Managers and Recruiters",
              "Freelance talent manager and recruiter roles at Sparked Live Network. "
