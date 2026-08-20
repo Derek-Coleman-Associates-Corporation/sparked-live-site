@@ -31,6 +31,8 @@ jobs:
           BASE_PATH: ${{ vars.BASE_PATH }}
           GA4_MEASUREMENT_ID: ${{ vars.GA4_MEASUREMENT_ID }}
           DISCORD_INVITE: ${{ vars.DISCORD_INVITE }}
+          # POST target for the /managers/ form; unset -> mailto fallback.
+          FORM_ENDPOINT: ${{ vars.FORM_ENDPOINT }}
         run: python3 generate_site.py
       - uses: actions/upload-pages-artifact@v3
         with:
