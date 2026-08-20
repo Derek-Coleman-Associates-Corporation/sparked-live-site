@@ -446,7 +446,7 @@ with the details below and we will reply either way.</div>
 </ul>""" % {"email": EMAIL})
 
     return """
-<form class="apply" action="%(endpoint)s" method="POST">
+<form class="apply" id="managerform" action="%(endpoint)s" method="POST">
 <div class="f"><label for="name">Full name <span class="req">*</span></label>
 <input id="name" name="name" type="text" autocomplete="name" required></div>
 
@@ -470,9 +470,9 @@ network's region, so we have to ask.</span></label>
 <div class="f"><label for="role">What are you interested in? <span class="req">*</span>
 </label><select id="role" name="role" required>
 <option value="">Select&hellip;</option>
-<option>Talent manager &mdash; coaching and looking after a roster</option>
-<option>Recruiter &mdash; finding and signing new creators</option>
-<option>Both</option>
+<option value="Talent manager">Talent manager &mdash; coaching and looking after a roster</option>
+<option value="Recruiter">Recruiter &mdash; finding and signing new creators</option>
+<option value="Both">Both</option>
 </select></div>
 
 <div class="f"><label for="experience">Have you managed or recruited creators before?
@@ -504,8 +504,60 @@ these details to consider my application, as described in the
 <a href="%(uprivacy)s">Privacy Policy</a>. <span class="req">*</span></label></div>
 
 <p><button type="submit">Send my details</button></p>
-</form>""" % {"endpoint": html.escape(FORM_ENDPOINT), "company": COMPANY,
-              "uprivacy": u("/privacy/")}
+</form>
+<script>
+(function () {
+  var form = document.getElementById("managerform");
+  if (!form || !window.fetch) return;
+  form.addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var btn = form.querySelector("button[type=submit]");
+    var note = document.getElementById("managerform-note");
+    if (!note) {
+      note = document.createElement("div");
+      note.id = "managerform-note";
+      note.className = "note";
+      note.setAttribute("role", "status");
+      form.appendChild(note);
+    }
+    var v = function (n) { var el = form.elements[n]; return el ? el.value.trim() : ""; };
+    // The API contract is camelCase JSON (creator-network-lead function);
+    // the input names stay snake_case for autofill friendliness.
+    var payload = {
+      source: "manager",
+      name: v("name"),
+      email: v("email"),
+      tiktokHandle: v("tiktok_handle"),
+      country: v("country"),
+      role: v("role"),
+      experience: v("experience"),
+      hoursPerWeek: v("hours_per_week"),
+      phone: v("phone"),
+      referredBy: v("referred_by"),
+      companyWebsite: v("company_website"),
+      consent: form.elements.consent.checked ? "yes" : ""
+    };
+    btn.disabled = true;
+    note.textContent = "Sending\\u2026";
+    fetch(form.action, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.ok) {
+        form.innerHTML = "<div class=\\"note\\"><strong>Got it &mdash; thank you.</strong> We read every application and reply either way.</div>";
+      } else {
+        btn.disabled = false;
+        note.textContent = (d && d.error ? d.error : "Something went wrong") + " \\u2014 or email %(email)s.";
+      }
+    }).catch(function () {
+      btn.disabled = false;
+      note.textContent = "Could not reach the server \\u2014 please email %(email)s.";
+    });
+  });
+})();
+</script>""" % {"endpoint": html.escape(FORM_ENDPOINT), "company": COMPANY,
+                "uprivacy": u("/privacy/"), "email": EMAIL}
 
 
 def invitation_code_body():
