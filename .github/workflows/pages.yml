@@ -25,6 +25,10 @@ jobs:
           # approved and the contract accepted. Flip the repo variable to "live"
           # only then — see README.
           NETWORK_STATUS: ${{ vars.NETWORK_STATUS }}
+          # Second key for the same door: live copy claims a TikTok partnership,
+          # so the generator also needs the approval named here. Empty -> the
+          # build degrades to prelaunch and annotates the run.
+          BACKSTAGE_APPROVAL: ${{ vars.BACKSTAGE_APPROVAL }}
           SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
           # Required while served from github.io/<repo>/. Clear it when a custom
           # domain at the apex is configured, or internal links will double up.

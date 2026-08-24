@@ -16,6 +16,8 @@ NETWORK_STATUS controls the claims the site makes:
 
 Never set NETWORK_STATUS=live before LIVE Backstage approval: claiming an
 affiliation we do not yet have would be inaccurate (TikTok Terms 3.2(c), 2.3(d)).
+That rule is enforced below, not merely documented here — live mode also requires
+BACKSTAGE_APPROVAL naming the approval, and falls back to prelaunch without it.
 
 Optional env: GA4_MEASUREMENT_ID, SITE_DOMAIN (writes CNAME), DISCORD_INVITE,
 BASE_PATH (URL prefix when served from a subpath, e.g. GitHub project pages).
@@ -27,7 +29,18 @@ import shutil
 from pathlib import Path
 
 STATUS = os.environ.get("NETWORK_STATUS", "prelaunch").strip().lower()
-LIVE = STATUS == "live"
+
+# Live mode drops the "not affiliated with TikTok" notice from every page footer
+# and asserts an operating TikTok LIVE Creator Network partnership. That is a
+# claim about a signed relationship, so one switch must not be able to make it:
+# live also requires BACKSTAGE_APPROVAL naming the approval (date, who granted
+# it). Missing approval degrades to prelaunch — the truthful state — rather than
+# publishing a partnership we cannot evidence. NETWORK_STATUS=live sat in this
+# repo for 26 days in 2026-08 while the contract was still unaccepted; a comment
+# saying "never do this" did not stop it, so the check now runs at build time.
+BACKSTAGE_APPROVAL = os.environ.get("BACKSTAGE_APPROVAL", "").strip()
+LIVE = STATUS == "live" and bool(BACKSTAGE_APPROVAL)
+CLAIM_BLOCKED = STATUS == "live" and not BACKSTAGE_APPROVAL
 DOMAIN = os.environ.get("SITE_DOMAIN", "").strip()
 BASE_URL = ("https://" + DOMAIN) if DOMAIN else ""
 # Serving from a subpath (GitHub project pages) breaks root-absolute links, so
@@ -870,6 +883,13 @@ def main():
 
     print("Built %d pages into %s (status=%s, domain=%s)"
           % (len(slugs), OUT, STATUS, DOMAIN or "-"))
+    if CLAIM_BLOCKED:
+        # ::warning:: is a GitHub Actions annotation, so this surfaces on the run
+        # summary instead of scrolling past in the log.
+        print("::warning title=Live claim blocked::NETWORK_STATUS=live but "
+              "BACKSTAGE_APPROVAL is empty — built in prelaunch mode. Set "
+              "BACKSTAGE_APPROVAL to the approval reference once LIVE Backstage "
+              "onboarding is approved and the contract is accepted.")
     if not LIVE:
         print("NOTE: prelaunch mode — 'not affiliated with TikTok' notice is active.")
 
