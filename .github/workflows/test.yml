@@ -14,3 +14,5 @@ jobs:
       # No env here on purpose: the tests set NETWORK_STATUS themselves per case,
       # so the repo variables must not leak in and change what they assert.
       - run: python3 test_launch_gating.py
+      - run: python3 test_interest_flow.py
+      - run: node --check assets/interest.js

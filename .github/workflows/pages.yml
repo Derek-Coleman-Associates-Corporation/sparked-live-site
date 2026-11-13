@@ -19,6 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Check application routes and market boundaries
+        run: |
+          python3 test_launch_gating.py
+          python3 test_interest_flow.py
+          node --check assets/interest.js
       - name: Generate site
         env:
           # NETWORK_STATUS stays "prelaunch" until LIVE Backstage onboarding is
@@ -34,9 +39,7 @@ jobs:
           # domain at the apex is configured, or internal links will double up.
           BASE_PATH: ${{ vars.BASE_PATH }}
           GA4_MEASUREMENT_ID: ${{ vars.GA4_MEASUREMENT_ID }}
-          DISCORD_INVITE: ${{ vars.DISCORD_INVITE }}
-          # POST target for the /managers/ form; unset -> mailto fallback.
-          FORM_ENDPOINT: ${{ vars.FORM_ENDPOINT }}
+          APPLY_LINK: ${{ vars.APPLY_LINK }}
         run: python3 generate_site.py
       - uses: actions/upload-pages-artifact@v5
         with:
