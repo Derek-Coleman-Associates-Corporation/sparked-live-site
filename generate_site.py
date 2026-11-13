@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static site generator for Sparked Live Network Inc.
+"""Static site generator for Sparked Live Network.
 
 Zero dependencies, stdlib only — emits a complete static site into dist/:
 creator landing page, apply page, privacy policy, terms, 404, sitemap, robots.
@@ -19,7 +19,7 @@ affiliation we do not yet have would be inaccurate (TikTok Terms 3.2(c), 2.3(d))
 That rule is enforced below, not merely documented here — live mode also requires
 BACKSTAGE_APPROVAL naming the approval, and falls back to prelaunch without it.
 
-Optional env: GA4_MEASUREMENT_ID, SITE_DOMAIN (writes CNAME), DISCORD_INVITE,
+Optional env: GA4_MEASUREMENT_ID, SITE_DOMAIN (writes CNAME), APPLY_LINK,
 BASE_PATH (URL prefix when served from a subpath, e.g. GitHub project pages).
 """
 
@@ -27,6 +27,7 @@ import html
 import os
 import shutil
 from pathlib import Path
+from interest_content import COPY, MARKETS, PHONE, WHATSAPP, wa, interest_form, market_cards, country_body, international_body, shop_body
 
 STATUS = os.environ.get("NETWORK_STATUS", "prelaunch").strip().lower()
 
@@ -53,14 +54,6 @@ def u(path):
     """Internal URL: u('/apply/') -> '<base>/apply/'."""
     return BASE_PATH + path
 GA4 = os.environ.get("GA4_MEASUREMENT_ID", "").strip()
-DISCORD = os.environ.get("DISCORD_INVITE", "").strip()
-# POST target for the talent-manager form. GitHub Pages serves static files and
-# cannot process a form, so submission needs a third-party endpoint (Formspree,
-# Basin, Formsubmit) or our own function. Set FORM_ENDPOINT as a repo Actions
-# variable. Left empty the page degrades to a mailto link — never to a form that
-# silently drops what someone typed.
-FORM_ENDPOINT = os.environ.get("FORM_ENDPOINT", "").strip()
-
 # TikTok's own application link, from LIVE Backstage -> Creators -> Scout
 # creators -> "Share application info". A creator who applies through this
 # lands in Scout creators -> Creators and needs NO invitation code.
@@ -70,13 +63,12 @@ FORM_ENDPOINT = os.environ.get("FORM_ENDPOINT", "").strip()
 # so web traffic through it is reported as QR scans. Backstage's "Copy link"
 # button yields a differently-tagged link — use that one here once captured,
 # and keep this one for printed/QR use, or the source column lies.
-APPLY_LINK = os.environ.get(
-    "APPLY_LINK", "https://www.tiktok.com/t/ZTAynpxHM/").strip()
+APPLY_LINK = os.environ.get("APPLY_LINK", "").strip() or "https://www.tiktok.com/t/ZTAynpxHM/"
 
-COMPANY = "Sparked Live Network Inc."
+COMPANY = "Derek Coleman & Associates Inc., trading as Sparked Live Network"
 EMAIL = "tiktok@dcassociatesgroup.com"
 ADDRESS = "1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103"
-UPDATED = "July 24, 2026"
+UPDATED = "November 12, 2026"
 
 OUT = Path(__file__).parent / "dist"
 
@@ -172,6 +164,55 @@ footer.site .fnav{margin-bottom:14px}
 footer.site .fnav a{margin-right:18px}
 .legal h2{font-size:1.15rem}
 .legal p,.legal li{color:var(--muted)}
+/* A clearer application hierarchy, with comfortable mobile targets. */
+:root{--accent:#b92447;--accent2:#087b80}
+@media(prefers-color-scheme:dark){:root{--accent:#ff8199;--accent2:#55dbe0}}
+.wrap{max-width:1100px}
+.brand{font-size:1.25rem;line-height:1.2;white-space:nowrap}
+.brand small{display:block;font-size:.58rem;letter-spacing:.18em;margin-top:5px}
+nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px}
+nav a{margin:0;padding:8px 0;font-size:.9rem}
+.nav-contact{font-weight:700;color:var(--fg)}
+.hero{padding:68px 0 46px}
+h1{font-size:clamp(2.2rem,5.4vw,4.2rem);max-width:17ch;letter-spacing:-.045em;line-height:1.07}
+.hero .lede{max-width:47em;margin-top:22px}
+.home-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:center}
+.home-hero h1{max-width:13ch}
+.home-hero .lede{font-size:1.1rem}
+.coaching-panel{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:14px;padding:26px}
+.coaching-panel h2{margin:12px 0 20px;font-size:1.6rem;line-height:1.3}
+.coaching-panel .steps{margin:0}.coaching-panel .steps li:last-child{border:0}
+.eyebrow{font-size:.73rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn,form.apply button{background:#b92447;color:white;border:1px solid transparent;border-radius:9px;line-height:1.4;min-height:46px;text-align:center}
+.btn.alt{background:transparent;color:var(--fg);border-color:var(--border)}
+.btn.whatsapp{background:#126847}
+.fine{font-size:.83rem;color:var(--muted);max-width:76em}
+.value-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:18px 0;border-bottom:1px solid var(--border)}
+.value-strip strong,.value-strip span{display:block}.value-strip span{font-size:.9rem;color:var(--muted)}
+.value-strip strong{font-size:1.12rem}
+.card{padding:25px;border-radius:14px}.card .eyebrow{display:block;margin-bottom:15px}
+.card h2{font-size:1.2rem;margin:0 0 12px}
+.text-link{display:inline-block;font-weight:650;margin-top:16px;padding:6px 0}
+.founder{border-left:4px solid var(--accent);padding:8px 26px;margin:52px 0;max-width:800px}
+.founder h2{margin-top:10px}.founder p{max-width:64ch}
+.market-list{border-top:1px solid var(--border);margin:22px 0 38px}
+.market-link{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:23px 5px;border-bottom:1px solid var(--border);color:var(--fg)}
+.market-link strong{font-size:1.3rem}.market-link small{display:block;color:var(--muted);font-size:.87rem}
+.market-link:hover{color:var(--accent);text-decoration:none;background:var(--card)}
+.closing{padding:26px;margin:48px 0 0;background:var(--card);border-radius:14px}.closing h2{margin:0 0 14px}
+.application-route{margin-top:36px;padding:28px;border:1px solid var(--border);border-radius:14px}.application-route h2{margin-top:10px}
+.interest-panel{scroll-margin-top:110px;margin-top:46px;max-width:820px;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:14px}
+.interest-panel h2{margin-top:0}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.hint{font-size:.87rem;color:var(--muted);display:block}
+.message-review{border:1px solid var(--accent2);padding:18px;border-radius:10px;margin-top:24px;background:var(--bg)}
+.message-review h3{margin-top:0}.message-review textarea{font-size:.9rem}
+.country-nav{margin-top:38px;font-size:.87rem}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}
+.skip-link{position:absolute;top:-100px;left:15px;padding:12px;background:var(--bg);z-index:30}.skip-link:focus{top:10px}
+main{overflow-wrap:anywhere}section[id],h2[id]{scroll-margin-top:120px}
+[hidden]{display:none!important}
+@media(max-width:800px){.home-hero{grid-template-columns:1fr;gap:20px}.coaching-panel{max-width:580px}.hero{padding-top:36px}.home-hero h1{max-width:none}header.site{position:relative}header.site .wrap{align-items:flex-start}nav{gap:4px 16px}.badge{font-size:.7rem}.value-strip{gap:12px}.value-strip strong{font-size:1rem}}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr}.wrap{padding:0 18px}.grid{grid-template-columns:1fr}.interest-panel,.application-route,.coaching-panel{padding:20px}.btn{display:block;margin-right:0}.value-strip{grid-template-columns:1fr;gap:0}.value-strip p{margin:9px 0}.value-strip strong{display:inline}.value-strip span{display:inline;margin-left:7px}.founder{padding-left:18px}form.apply button{width:100%}h1{max-width:none}.country-nav{display:block}.country-nav a{display:inline-block}.fnav{line-height:2.4}}
 """
 
 
@@ -185,56 +226,29 @@ def ga_snippet():
     )
 
 
-def page(slug, title, description, body, legal=False):
-    """Render one page into dist/<slug>/index.html (slug '' = site root)."""
-    canonical = ("%s/%s" % (BASE_URL, slug + "/" if slug else "")) if BASE_URL else ""
-    canon_tag = '<link rel="canonical" href="%s">' % canonical if canonical else ""
-    doc = """<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
+def page(slug, title, description, body, legal=False, lang="en", territory=False):
+    """Render a localized page, keeping market status explicit in its footer."""
+    c = COPY[lang]
+    contact_url = html.escape(wa(MARKETS[slug]["message"])) if slug in MARKETS else html.escape(wa())
+    canonical = BASE_URL + u("/" + (slug + "/" if slug else "")) if BASE_URL else ""
+    canon_tag = '<link rel="canonical" href="%s">' % html.escape(canonical) if canonical else ""
+    footer_notice = c["territory_notice"] if territory else DISCLAIMER
+    doc = f"""<!doctype html>
+<html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>%(title)s</title>
-<meta name="description" content="%(desc)s">
-%(canon)s
-<meta property="og:title" content="%(title)s">
-<meta property="og:description" content="%(desc)s">
-<meta property="og:type" content="website">
-<style>%(css)s</style>%(ga)s</head>
-<body>
-<header class="site"><div class="wrap">
-<a class="brand" href="%(root)s">Sparked <span>Live</span> Network</a>
-<nav><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
-<a href="%(umanagers)s">Work with us</a><a href="mailto:%(email)s">Contact</a></nav>
-</div></header>
-<main class="wrap%(legalcls)s">
-%(body)s
-</main>
-<footer class="site"><div class="wrap">
-<div class="fnav"><a href="%(root)s">Home</a><a href="%(uapply)s">Apply</a>
-<a href="%(umanagers)s">Work with us</a>
-<a href="%(uprivacy)s">Privacy</a><a href="%(uterms)s">Terms</a>
-<a href="mailto:%(email)s">%(email)s</a></div>
-<p>&copy; 2026 %(company)s &middot; A Delaware corporation &middot; %(addr)s</p>
-<p>%(disclaimer)s</p>
-</div></footer>
-</body></html>
-""" % {
-        "title": html.escape(title),
-        "desc": html.escape(description),
-        "canon": canon_tag,
-        "css": CSS,
-        "ga": ga_snippet(),
-        "body": body,
-        "email": EMAIL,
-        "company": COMPANY,
-        "addr": html.escape(ADDRESS),
-        "legalcls": " legal" if legal else "",
-        "disclaimer": DISCLAIMER,
-        "root": u("/"),
-        "uapply": u("/apply/"),
-        "umanagers": u("/managers/"),
-        "uprivacy": u("/privacy/"),
-        "uterms": u("/terms/"),
-    }
+<title>{html.escape(title)}</title><meta name="description" content="{html.escape(description)}">
+{canon_tag}<meta property="og:title" content="{html.escape(title)}">
+<meta property="og:description" content="{html.escape(description)}"><meta property="og:type" content="website">
+<meta property="og:url" content="{html.escape(canonical)}">
+<style>{CSS}</style>{ga_snippet()}</head><body>
+<a class="skip-link" href="#main">{c['skip']}</a>
+<header class="site"><div class="wrap"><a class="brand" href="{u('/')}">Sparked <span>Live</span><small>CREATOR NETWORK</small></a>
+<nav aria-label="{c['home']}"><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/shop/')}">Shop</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a class="nav-contact" href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav></div></header>
+<main id="main" class="wrap{' legal' if legal else ''}">{body}</main>
+<footer class="site"><div class="wrap"><div class="fnav"><a href="{u('/')}">{c['home']}</a><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a href="{u('/privacy/')}">{c['privacy']}</a><a href="{u('/terms/')}">{c['terms']}</a></div>
+<p><a href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp {PHONE}</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<p>&copy; 2026 {html.escape(COMPANY)} · {html.escape(ADDRESS)}</p><p>{footer_notice}</p><p>{c['footer_status']}</p>
+</div></footer></body></html>"""
     d = OUT / slug if slug else OUT
     d.mkdir(parents=True, exist_ok=True)
     (d / "index.html").write_text(doc, encoding="utf-8")
@@ -245,337 +259,49 @@ def page(slug, title, description, body, legal=False):
 # site. Pre-launch we are an independent applicant; only after LIVE Backstage
 # approval may we describe ourselves as a partner network.
 DISCLAIMER = (
-    "Sparked Live Network Inc. is an independent talent network and is not "
+    "Sparked Live Network is an independent talent network and is not "
     "affiliated with, endorsed by, or sponsored by TikTok. TikTok is a trademark "
     "of its respective owner."
 ) if not LIVE else (
-    "Sparked Live Network Inc. is an independent company operating as a TikTok "
-    "LIVE Creator Network partner. TikTok is a trademark of its respective owner."
+    "Sparked Live Network is operating as a TikTok LIVE Creator Network partner "
+    "in the United States only. This does not establish Shop or international approval. "
+    "TikTok is a trademark of its respective owner."
 )
 
-APPLY_HREF = DISCORD if DISCORD else ("mailto:%s?subject=Creator%%20Application" % EMAIL)
-
-
 def index_body():
-    if LIVE:
-        badge = "Now accepting creators"
-        h1 = "You keep 100% of your diamonds."
-        lede = ("Sparked Live Network is a U.S. TikTok LIVE creator network built by a "
-                "Top Gifter &mdash; we spent years on the <em>sending</em> side of the gift "
-                "bar, so we know exactly what turns a stream into diamonds. "
-                "No cut, no catch, no exceptions.")
-    else:
-        badge = "Founding creators &mdash; applications open"
-        h1 = "We're building a network where you keep 100%."
-        lede = ("Sparked Live Network is a U.S. talent network for TikTok LIVE creators, "
-                "founded by a Top Gifter who spent years on the <em>sending</em> side of "
-                "the gift bar. We're onboarding our founding creators now &mdash; get in "
-                "before the roster fills.")
-
-    prelaunch_note = "" if LIVE else (
-        '<div class="note"><strong>Straight with you:</strong> our TikTok LIVE Backstage '
-        'network application is in review. We are opening founding-creator applications '
-        'now so we can onboard our first cohort the day we are approved. We will tell you '
-        'exactly where that stands when you apply &mdash; no one gets a surprise.</div>')
-
-    return """
-<section class="hero">
-<span class="badge">%(badge)s</span>
-<h1>%(h1)s</h1>
-<p class="lede">%(lede)s</p>
-<a class="btn" href="%(apply)s">Apply to join</a>
-<a class="btn alt" href="#what-you-get">See what you get</a>
-</section>
-
-%(prenote)s
-
-<h2>Why a gifter, not a manager</h2>
-<p>Every network says it helps you grow. Here is what is actually different about us:
-our founder built his side of TikTok LIVE as a <strong>Top Gifter</strong>. We have
-watched thousands of hours of LIVE from the viewer's seat and know, concretely, what
-makes someone open their wallet at minute forty of a stream &mdash; and what makes them
-close the app. That is the knowledge we hand our creators.</p>
-
-<div class="grid">
-<div class="card"><p class="big">0%%</p><h3>Our cut of your gifts</h3>
-<p>Not a reduced cut. Not a tiered cut. Zero.</p></div>
-<div class="card"><p class="big">100%%</p><h3>Yours to keep</h3>
-<p>Every diamond you earn stays yours.</p></div>
-<div class="card"><p class="big">1:1</p><h3>A real manager</h3>
-<p>A dedicated person, not a Discord role.</p></div>
-</div>
-
-<p>TikTok pays us directly from its own network incentive pool, based on how our roster
-performs overall. Our income depends entirely on helping you earn more. That is the only
-alignment that makes sense &mdash; and it is why we can afford to never touch your gifts.</p>
-
-<h2 id="what-you-get">What you get</h2>
-<ul class="check">
-<li><strong>Zero-cut earnings.</strong> $0 deducted from your gifts, ever. Your diamonds
-are yours.</li>
-<li><strong>Account protection.</strong> When a false strike or ban hits, a real person
-works your case through our agency support channel. We file, escalate, and keep you
-updated. <em>(Outcomes are TikTok's call; the advocacy is ours.)</em></li>
-<li><strong>Computer streaming setup (Windows or Mac).</strong> Going live from a
-computer instead of your phone gets you sharper video, on-screen alerts, and graphics.
-We request a <em>stream key</em> on your behalf through our partner channel &mdash; that
-is the code that lets your computer broadcast to TikTok &mdash; then set you up end to
-end in <strong>OBS Studio (Open Broadcaster Software)</strong>, the free streaming
-program most creators use, including overlays, alerts, and gift-triggered effects that
-measurably lift gifting.</li>
-<li><strong>PK battles and matchmaking.</strong> A <strong>PK battle</strong>
-(&ldquo;PK&rdquo; is short for <em>player knockout</em>) is a head-to-head LIVE match
-where you and another creator appear side by side and viewers send gifts to pick the
-winner. We organize matches against partners at your level &mdash; the fastest way to
-put your stream in front of an audience that has never seen you.</li>
-<li><strong>1-on-1 growth coaching.</strong> Stream structure, hook timing, gift-goal
-design, schedule strategy, and a monthly walk through your numbers.</li>
-</ul>
-
-<h2>What we ask</h2>
-<p>We are selective, and we will tell you why. Under TikTok's network rules, a creator
-only counts toward the incentives that pay us &mdash; and fund what we give back &mdash;
-by showing up consistently. To stay active on our roster:</p>
-<ul class="check">
-<li><strong>7+ valid LIVE days per month</strong> (a valid day is 60+ continuous minutes)</li>
-<li><strong>15+ total LIVE hours per month</strong></li>
-<li>18 years or older, based in the United States</li>
-<li>Not currently signed to another TikTok LIVE network</li>
-</ul>
-<p>Already streaming near that? You will do well here. Just starting out? Tell us
-&mdash; we would rather build a ramp with you than set you up to miss a target.</p>
-
-<h2>What we won't do</h2>
-<ul class="no">
-<li><strong>We won't lock you in.</strong> Under TikTok's own rules every creator may
-leave their network at any time, for any reason. We will not make that awkward.</li>
-<li><strong>We won't promise unbans, reach, or feature placement.</strong> Those are
-TikTok's decisions. Anyone promising them is selling you something they do not control.</li>
-<li><strong>We won't ask you for money.</strong> No fees, no subscriptions, no
-"starter packages." If a network asks you to pay, walk away.</li>
-</ul>
-
-<h2>Questions</h2>
-<details><summary>Do you really take nothing from my gifts?</summary>
-<p>Correct &mdash; zero. TikTok compensates networks separately, out of its own incentive
-pool, based on overall roster performance. We are never paid out of your diamonds.</p></details>
-<details><summary>Can I leave if it is not working out?</summary>
-<p>Yes, any time. That is your right under TikTok's rules, not a favor we grant.</p></details>
-<details><summary>Will you get my account unbanned?</summary>
-<p>We will file and escalate your case through our agency support channel and stay on it.
-We cannot promise an outcome, because that decision belongs to TikTok. Any network telling
-you otherwise is overselling.</p></details>
-<details><summary>Can you get me a stream key so I can go LIVE from my computer?</summary>
-<p>A stream key is the code that lets a computer broadcast to TikTok instead of streaming
-from your phone. We can request one on your behalf through our partner channel, and we
-will do the whole OBS Studio (Open Broadcaster Software) setup with you once it is
-granted. TikTok grants keys at its own discretion &mdash; but the request coming from a
-network carries further than one from an individual.</p></details>
-<details><summary>What if I stream in a language other than English?</summary>
-<p>Apply anyway and tell us. We are a U.S.-based roster, but we care about what you make,
-not what language you make it in.</p></details>
-
-<h2>Words you'll hear (and what they actually mean)</h2>
-<p>New to LIVE? Nobody explains this stuff, so here it is in plain English.</p>
-<div class="grid">
-<div class="card"><h3>Diamonds</h3><p>What the gifts your viewers send convert into.
-Diamonds are what you cash out &mdash; and 100%% of yours stay yours.</p></div>
-<div class="card"><h3>PK battle</h3><p>Short for <em>player knockout</em>. A head-to-head
-LIVE match: you and another creator side by side, viewers gifting to pick a winner.</p></div>
-<div class="card"><h3>Stream key</h3><p>A code from TikTok that lets you broadcast from a
-computer instead of your phone. TikTok grants these case by case.</p></div>
-<div class="card"><h3>OBS Studio</h3><p>Open Broadcaster Software &mdash; the free
-program most creators use to stream from a computer, with overlays and alerts.</p></div>
-<div class="card"><h3>Overlay</h3><p>Graphics layered on your stream: gift alerts, goal
-bars, top-gifter lists. They make viewers want to gift.</p></div>
-<div class="card"><h3>Valid LIVE day</h3><p>TikTok only counts a day toward network
-requirements if you streamed <strong>60+ continuous minutes</strong>.</p></div>
-</div>
-
-<h2>Ready?</h2>
-<p>Applications are reviewed by a person, and you will get a real reply &mdash; not a
-template. Never streamed from a computer, never done a PK battle? That is fine &mdash;
-that is precisely what we are here to teach you.</p>
-<a class="btn" href="%(apply)s">Apply to join</a>
-""" % {"badge": badge, "h1": h1, "lede": lede, "prenote": prelaunch_note,
-       "apply": html.escape(APPLY_HREF)}
+    badge = "US LIVE creator applications open" if LIVE else "US LIVE founding-creator interest"
+    status = "" if LIVE else '<div class="note">Our TikTok LIVE Backstage network application is in review. We are gathering interest while approval is pending.</div>'
+    return f"""<section class="hero home-hero"><div><span class="badge">{badge}</span>
+<h1>Your LIVE.<br>Your next level.</h1><p class="lede">Build a stream people come back for. Sparked connects creators with practical coaching, streaming support and a person to talk to.</p>
+<a class="btn" href="{u('/apply/')}">Apply to join</a><a class="btn alt" href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">Talk to us on WhatsApp</a>
+<p class="fine">US LIVE applications · International expressions of interest</p></div>
+<aside class="coaching-panel"><p class="eyebrow">Coaching in practice</p><h2>A stronger stream starts with a plan.</h2><ol class="steps"><li><strong>Make your opening count.</strong><br>Give new viewers a reason to stay.</li><li><strong>Build a repeatable format.</strong><br>Find a schedule and structure that fit you.</li><li><strong>Review and improve.</strong><br>Turn your stream experience into a next step.</li></ol></aside></section>
+{status}
+<div class="value-strip"><p><strong>0% network cut</strong><span>of your LIVE gifts</span></p><p><strong>Practical support</strong><span>for your setup and stream</span></p><p><strong>Real conversations</strong><span>with the Sparked team</span></p></div>
+<p class="fine">Sparked does not take a cut of creators’ LIVE gifts. TikTok’s own rewards rules, conversion, deductions and payout conditions still apply. Earnings are not guaranteed. Shop collaborations have separate terms.</p>
+<h2 id="what-you-get">Support for the work behind the LIVE</h2>
+<div class="grid"><article class="card"><span class="eyebrow">01 / Your stream</span><h3>Get comfortable on camera</h3><p>Work on your opening, stream format, audience interaction and schedule. Build habits you can maintain.</p></article><article class="card"><span class="eyebrow">02 / Your setup</span><h3>Make your setup work for you</h3><p>Get guidance on OBS, sound, lighting, overlays and computer streaming. TikTok controls access to features and stream keys.</p></article><article class="card"><span class="eyebrow">03 / Your community</span><h3>Find your people</h3><p>Discuss creator collaborations, LIVE matches and how to respond when a stream or account needs attention. Platform outcomes cannot be guaranteed.</p></article></div>
+<section class="founder"><p class="eyebrow">Meet the founder</p><h2>Built from the viewer’s side of LIVE.</h2><p>Derek Coleman founded Sparked after spending time on TikTok LIVE as a gifter. That perspective shapes our approach: understand why people stay, help creators find a repeatable format, and make support easy to reach.</p><a href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer">Meet Sparked on TikTok ↗</a></section>
+<h2>Choose your next step</h2><div class="grid"><article class="card"><h3>US LIVE creators</h3><p>See the application steps and continue to TikTok’s official flow.</p><a class="text-link" href="{u('/apply/')}">Explore LIVE →</a></article><article class="card"><h3>Shop creators and partners</h3><p>Tell us about your product content and affiliate interests. Shop development is separate from LIVE enrollment.</p><a class="text-link" href="{u('/shop/')}">Discuss Shop →</a></article><article class="card"><h3>Managers and recruiters</h3><p>Share your creator experience, availability and proposed scope.</p><a class="text-link" href="{u('/managers/')}">Work with Sparked →</a></article></div>
+<h2>Help shape our international expansion</h2><p>UK, Brazil and Mexico: expressions of interest only while local operations and program approvals are assessed.</p>{market_cards(u)}
+<h2>Before you apply</h2><details><summary>Who can apply for US LIVE?</summary><p>Adults based in the US can discuss eligibility with us. Tell us if you already belong to another network. We confirm current TikTok criteria and any streaming expectations before onboarding.</p></details><details><summary>Does Sparked take a cut of my LIVE gifts?</summary><p>Sparked’s network cut is zero. This is separate from TikTok’s platform rules and payout calculations. It is not an earnings guarantee or a statement about Shop commission terms.</p></details><details><summary>Does registering interest sign me up?</summary><p>No. A WhatsApp conversation does not enroll you. US LIVE network invitations are accepted inside TikTok. Any work or commercial arrangement needs its own agreed terms.</p></details><details><summary>Can I leave a network?</summary><p>Ask us about the current release process and any applicable agreement before joining. TikTok’s current rules and your agreement govern the process.</p></details>
+<section class="closing"><h2>Let’s talk about what you want to build.</h2><a class="btn" href="{u('/apply/')}">Find your application path</a><a class="btn alt" href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">Message Sparked</a></section>"""
 
 
 def apply_body():
-    channel = ('<p><a class="btn" href="%s">Join our Discord to apply</a></p>' % html.escape(DISCORD)
-               if DISCORD else
-               '<p><a class="btn" href="mailto:%s?subject=Creator%%20Application">'
-               'Email your application</a></p>' % EMAIL)
-    return """
-<h1>Apply to Sparked Live</h1>
-<p class="lede">Two minutes. A person reads every one of these.</p>
-<p><a class="btn" href="%(applylink)s" rel="noopener">Apply on TikTok</a>
-<a class="btn alt" href="%(uinvite)s">See how it works</a></p>
-<p style="color:var(--muted);font-size:.94rem;margin-top:-2px">Goes straight to TikTok's own application form for our network. No invitation code needed.</p>
-%(channel)s
-
-<h2>Tell us this much</h2>
-<ul class="check">
-<li>Your TikTok handle</li>
-<li>Roughly how many days and hours you go LIVE in a normal month</li>
-<li>What you stream &mdash; gaming, music, just chatting, PK battles (head-to-head
-matches against another creator), something else</li>
-<li>Whether you are currently signed with another TikTok LIVE network</li>
-<li>That you are 18 or older and based in the United States</li>
-<li>The single thing you most want help with right now</li>
-</ul>
-
-<div class="note"><strong>Applying from outside our official TikTok account?</strong>
-TikTok will ask you for a 6-character invitation code. It lives in the app and takes
-about thirty seconds to find &mdash; <a href="%(uinvite)s">here is a video showing
-exactly where</a>. It expires after 24 hours, so grab it when you are ready to send.</div>
-
-<h2>What happens next</h2>
-<p>We review your handle and recent LIVE activity, then reply either way &mdash; usually
-within a few days. If we are a fit, you get an invitation through TikTok's official LIVE
-Backstage system, which is the only way a creator can legitimately join a network. You
-accept it from inside the TikTok app. Nobody will ever ask you for a password.</p>
-
-<div class="note"><strong>Safety note.</strong> A real network never asks for your TikTok
-password, never charges a joining fee, and never takes a cut of your diamonds. If anyone
-claiming to be us does any of those things, they are not us &mdash; email
-<a href="mailto:%(email)s">%(email)s</a> and tell us.</div>
-""" % {"channel": channel, "email": EMAIL, "uinvite": u("/invitation-code/"),
-       "applylink": html.escape(APPLY_LINK)}
-
-
-def manager_form():
-    """The talent-manager form, or an honest mailto fallback when unconfigured."""
-    if not FORM_ENDPOINT:
-        return ("""
-<div class="note"><strong>The form is not live yet.</strong> Until it is, email
-<a href="mailto:%(email)s?subject=Talent%%20Manager%%20Application">%(email)s</a>
-with the details below and we will reply either way.</div>
-<ul class="check">
-<li>Your name, email, and TikTok handle</li>
-<li>Whether you have managed or recruited creators before, and where</li>
-<li>Roughly how many hours a week you can commit</li>
-<li>The country and state you live in</li>
-</ul>""" % {"email": EMAIL})
-
-    return """
-<form class="apply" id="managerform" action="%(endpoint)s" method="POST">
-<div class="f"><label for="name">Full name <span class="req">*</span></label>
-<input id="name" name="name" type="text" autocomplete="name" required></div>
-
-<div class="f"><label for="email">Email address <span class="req">*</span>
-<span class="hint">Where we reply. Check your spam folder if you don't hear back.</span>
-</label><input id="email" name="email" type="email" autocomplete="email" required></div>
-
-<div class="f"><label for="handle">Your TikTok username <span class="req">*</span>
-<span class="hint">The @handle, for example @sparkedlive</span></label>
-<input id="handle" name="tiktok_handle" type="text" placeholder="@" required></div>
-
-<div class="f"><label for="country">Where do you live? <span class="req">*</span>
-<span class="hint">TikTok requires managers and creators to be located in the
-network's region, so we have to ask.</span></label>
-<select id="country" name="country" required>
-<option value="">Select&hellip;</option>
-<option>United States</option>
-<option>Other</option>
-</select></div>
-
-<div class="f"><label for="role">What are you interested in? <span class="req">*</span>
-</label><select id="role" name="role" required>
-<option value="">Select&hellip;</option>
-<option value="Talent manager">Talent manager &mdash; coaching and looking after a roster</option>
-<option value="Recruiter">Recruiter &mdash; finding and signing new creators</option>
-<option value="Both">Both</option>
-</select></div>
-
-<div class="f"><label for="experience">Have you managed or recruited creators before?
-<span class="hint">Tell us where and roughly how many. &ldquo;No, but here's why I'd be
-good at it&rdquo; is a real answer &mdash; we read these.</span></label>
-<textarea id="experience" name="experience"></textarea></div>
-
-<div class="f"><label for="hours">Hours a week you can commit</label>
-<input id="hours" name="hours_per_week" type="text"
-placeholder="e.g. 10&ndash;15"></div>
-
-<div class="f"><label for="phone">Phone number <span class="hint">Optional. Only used
-if you ask us to call &mdash; we do not run automated texts.</span></label>
-<input id="phone" name="phone" type="tel" autocomplete="tel"></div>
-
-<div class="f"><label for="referrer">Referred by someone? Their TikTok username
-<span class="hint">Optional.</span></label>
-<input id="referrer" name="referred_by" type="text" placeholder="@"></div>
-
-<div class="f hp" aria-hidden="true">
-<label for="company_website">Leave this field empty</label>
-<input id="company_website" name="company_website" type="text" tabindex="-1"
-autocomplete="off"></div>
-
-<div class="f consent">
-<input id="consent" name="consent" type="checkbox" value="yes" required>
-<label for="consent">I am 18 or older, and I agree that %(company)s may store and use
-these details to consider my application, as described in the
-<a href="%(uprivacy)s">Privacy Policy</a>. <span class="req">*</span></label></div>
-
-<p><button type="submit">Send my details</button></p>
-</form>
-<script>
-(function () {
-  var form = document.getElementById("managerform");
-  if (!form || !window.fetch) return;
-  form.addEventListener("submit", function (ev) {
-    ev.preventDefault();
-    var btn = form.querySelector("button[type=submit]");
-    var note = document.getElementById("managerform-note");
-    if (!note) {
-      note = document.createElement("div");
-      note.id = "managerform-note";
-      note.className = "note";
-      note.setAttribute("role", "status");
-      form.appendChild(note);
-    }
-    var v = function (n) { var el = form.elements[n]; return el ? el.value.trim() : ""; };
-    // The API contract is camelCase JSON (creator-network-lead function);
-    // the input names stay snake_case for autofill friendliness.
-    var payload = {
-      source: "manager",
-      name: v("name"),
-      email: v("email"),
-      tiktokHandle: v("tiktok_handle"),
-      country: v("country"),
-      role: v("role"),
-      experience: v("experience"),
-      hoursPerWeek: v("hours_per_week"),
-      phone: v("phone"),
-      referredBy: v("referred_by"),
-      companyWebsite: v("company_website"),
-      consent: form.elements.consent.checked ? "yes" : ""
-    };
-    btn.disabled = true;
-    note.textContent = "Sending\\u2026";
-    fetch(form.action, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      if (d && d.ok) {
-        form.innerHTML = "<div class=\\"note\\"><strong>Got it &mdash; thank you.</strong> We read every application and reply either way.</div>";
-      } else {
-        btn.disabled = false;
-        note.textContent = (d && d.error ? d.error : "Something went wrong") + " \\u2014 or email %(email)s.";
-      }
-    }).catch(function () {
-      btn.disabled = false;
-      note.textContent = "Could not reach the server \\u2014 please email %(email)s.";
-    });
-  });
-})();
-</script>""" % {"endpoint": html.escape(FORM_ENDPOINT), "company": COMPANY,
-                "uprivacy": u("/privacy/"), "email": EMAIL}
+    us_action = (f'<a class="btn" href="{html.escape(APPLY_LINK)}" target="_blank" rel="noopener noreferrer">Apply on TikTok — US LIVE</a>' if LIVE else f'<p>Our network application is in review. <a href="{html.escape(wa())}">Discuss US LIVE interest on WhatsApp</a>.</p>')
+    return f"""<section class="hero"><span class="badge">Find your path</span><h1>Start with your country.<br>Choose what you create.</h1><p class="lede">LIVE streaming and Shop are different opportunities. Choose the route that fits you so your inquiry reaches us with the right context.</p></section>
+<section class="application-route" id="us-live"><p class="eyebrow">United States / LIVE</p><h2>Apply to the US LIVE network</h2><p>For creators aged 18 or older who live in the US. TikTok determines eligibility; tell us if you are already in another network.</p>{us_action}<a class="btn alt" href="{html.escape(wa('Hi Sparked Live, I have a question about the US LIVE application.'))}" target="_blank" rel="noopener noreferrer">Ask a question on WhatsApp</a>
+<ol class="steps"><li><strong>Open the TikTok application.</strong> Use the account you create with. The shared application link identifies Sparked; no invitation code is needed for this route.</li><li><strong>We review eligibility and fit.</strong> Discuss your content, schedule and support needs with us.</li><li><strong>Accept an invitation inside TikTok.</strong> Applying alone does not enroll you, and we never need your password.</li></ol><p>Need help with the app? <a href="{u('/invitation-code/')}">View our application walkthrough</a>.</p></section>
+<section id="international"><h2>Outside the US?</h2><p>Register interest in your local market. These pages do not enroll creators into the US network or promise a local launch.</p>{market_cards(u)}</section>
+<div class="grid"><article class="card"><h2>Interested in Shop?</h2><p>Product videos, affiliate content and LIVE shopping have their own eligibility and commercial terms.</p><a class="text-link" href="{u('/shop/')}">Register Shop interest →</a></article><article class="card"><h2>Manager or recruiter?</h2><p>Tell us about your market, experience and availability.</p><a class="text-link" href="{u('/managers/')}">Discuss working with us →</a></article></div>
+<div class="note">We do not charge a joining fee for the Sparked LIVE network and never ask for your password or verification codes. If an invitation looks suspicious, <a href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">ask us directly</a>.</div>"""
 
 
 def invitation_code_body():
     return """
-<h1>Apply to Sparked Live</h1>
+<h1>US LIVE application walkthrough</h1>
+<div class="note">This walkthrough is for US LIVE creators. For UK, Brazil or Mexico, use our <a href="%(uinternational)s">international interest pages</a>. Shop has a separate inquiry route.</div>
 <p class="lede">The quickest way in is our TikTok application link. Tap it, send
 your details, and we take it from there &mdash; <strong>no invitation code
 needed</strong>.</p>
@@ -620,8 +346,8 @@ it &mdash; it takes about thirty seconds.</p>
 </ol>
 
 <div class="note"><strong>Your code expires after 24 hours.</strong> The screen
-shows the exact time it runs out. If yours has lapsed, just open the same screen
-again and generate a new one &mdash; there is no limit and it costs you nothing.</div>
+shows the exact time it runs out. Follow the expiry shown in your app. If yours has
+lapsed, open the same screen again to check the available options.</div>
 
 <h2>What the code does, and what it doesn't</h2>
 <ul class="check">
@@ -636,8 +362,7 @@ invitation inside the TikTok app, and you can decline it</li>
 
 <div class="note"><strong>Nobody should ever ask you for your password.</strong>
 Not us, not TikTok, not anyone claiming to work with either. The invitation code
-is the only thing we need from you, and a real network never charges a joining
-fee or takes a cut of your diamonds.</div>
+is the only thing we need from you, and Sparked does not charge a LIVE joining fee or take a network cut of your LIVE gifts.</div>
 
 <p><a class="btn" href="%(applylink)s" rel="noopener">Open the application on TikTok</a>
 <a class="btn alt" href="%(uapply)s">What we look for</a></p>
@@ -645,63 +370,17 @@ fee or takes a cut of your diamonds.</div>
        "poster": u("/assets/invitation-code-howto-poster.jpg"),
        "qr": u("/assets/apply-qr.png"),
        "applylink": html.escape(APPLY_LINK),
-       "uapply": u("/apply/")}
+       "uapply": u("/apply/"), "uinternational": u("/international/")}
 
 
 def managers_body():
-    return """
-<h1>Work with us</h1>
-<p class="lede">We are looking for talent managers and recruiters &mdash; freelance,
-paid on results, working the roster you build.</p>
-
-%(form)s
-
-<h2>What the work actually is</h2>
-<p><strong>Talent manager.</strong> You look after a group of creators: help them build
-a schedule they can keep, get them set up to stream from a computer, pair them for
-head-to-head battles, and escalate problems &mdash; false strikes, bans, payment
-questions &mdash; on their behalf. The job is mostly consistency and follow-through, not
-sales.</p>
-<p><strong>Recruiter.</strong> You find creators who would be better off with support
-than without it, start a real conversation, and bring them in through TikTok's official
-invitation system. No cold-spam, no scraping, no bought lists &mdash; those break
-TikTok's rules and we will not run that way.</p>
-
-<h2>How you get paid</h2>
-<p>TikTok pays networks a monthly bonus based on how the roster performs. Managers earn
-a share of the bonus their own creators generate &mdash; so your pay tracks how well the
-people you look after actually do. We will give you the exact terms in writing before
-you start.</p>
-<div class="note"><strong>Creators keep one hundred percent of their diamonds.</strong>
-Your pay never comes out of a creator's earnings, and neither does ours. If you have
-worked somewhere that took a cut of gifts, this is not that.</div>
-
-<h2>The honest version</h2>
-<ul class="check">
-<li>This is freelance, contractor work &mdash; not employment, no salary, no benefits</li>
-<li>Pay is performance-based. A roster that does not stream earns nothing</li>
-<li>We are a new network, so you would be building from a small base</li>
-<li>You keep your own hours; nobody is tracking your screen</li>
-</ul>
-<ul class="no">
-<li>We will not ask you to pay anything to join &mdash; ever, for any reason</li>
-<li>We will not ask for your TikTok password, and neither should anyone else</li>
-<li>We will not promise you a number we cannot back up</li>
-</ul>
-
-<h2>What we need from you</h2>
-<ul class="check">
-<li>18 or older, and legally able to work as a contractor where you live</li>
-<li>Located in the region our network covers &mdash; TikTok enforces this, not us</li>
-<li>Reachable. Creators ask questions at odd hours and notice when nobody answers</li>
-<li>Straight with people. You will be the reason someone trusts us or doesn't</li>
-</ul>
-
-<div class="note"><strong>How the hiring works.</strong> You send the form, we reply
-either way, and if it looks like a fit we talk. Anyone who takes on creators signs a
-written agreement first &mdash; scope, pay, confidentiality, and how either side ends
-it. Nothing starts on a handshake.</div>
-""" % {"form": manager_form()}
+    return f"""<section class="hero"><span class="badge">Managers &amp; recruiters</span><h1>Know creators?<br>Let’s build together.</h1><p class="lede">Tell us about the market you know, the creators you support and the work you want to do. We welcome proposals for a defined scope, availability and compensation.</p><a class="btn" href="#interest">Introduce yourself</a></section>
+<div class="note">US LIVE opportunities and international planning are different stages. UK, Brazil and Mexico inquiries are exploratory, and Shop is a separate program. This page is not a job offer or a promise of paid work.</div>
+<div class="grid"><article class="card"><h2>Local managers</h2><p>Coach creators, support their stream setup, plan schedules and follow through on questions. Show us relevant work and how you communicate.</p></article><article class="card"><h2>Recruiters</h2><p>Build real relationships with suitable creators and explain the opportunity accurately. We want thoughtful introductions, not bulk unsolicited messages.</p></article></div>
+<h2>What to include</h2><ul class="check"><li>Your country and working languages</li><li>Experience with LIVE, Shop or both, with examples you have permission to share</li><li>Hours available each week and your proposed scope</li><li>Your proposed hourly, monthly or project rate and any commission expectations</li></ul>
+<h2>Agree the work before it starts</h2><p>Scope, payment, responsibilities and any performance incentives must be agreed in writing before work begins. Your proposal does not commit either side. We do not ask candidates to pay a joining fee.</p>
+<p>Prefer a local-language introduction? <a href="{u('/brazil/')}">Brasil — Português</a> · <a href="{u('/mexico/')}">México — Español</a> · <a href="{u('/uk/')}">UK — English</a></p>
+{interest_form(u, managers=True)}"""
 
 
 def privacy_body():
@@ -726,17 +405,10 @@ your public profile and your own content statistics. We use it to show you and y
 manager your own numbers. We do not access data belonging to people who have not
 authorized us, and you can disconnect at any time from your TikTok settings, which
 immediately ends our access.</p>
-<p><strong>Visitors.</strong> This site collects no personal information from ordinary
-browsing. If site analytics are enabled, they measure aggregate traffic only.</p>
+<p><strong>Visitors.</strong> Our hosting provider processes technical request information to serve this website. If analytics are enabled, they may process device and browsing information. Do not include personal or sensitive information in page URLs.</p>
 
-<p><strong>Talent manager and recruiter applicants.</strong> If you submit the form on
-our <a href="%(umanagers)s">Work with us</a> page we collect your name, email address,
-TikTok username, the country you live in, the role you are interested in, and anything
-you choose to tell us about your experience and availability. A phone number and a
-referrer's username are optional; we ask for a phone number only so we can call if you
-want us to, and <strong>we do not send automated text messages</strong>. That form is
-delivered by a third-party form service, which handles the message in transit on our
-behalf and does not use it for its own purposes.</p>
+<p><strong>WhatsApp inquiries, including international interest.</strong> Our message builder asks for your name, country, preferred language, role, program and optional TikTok handle, experience and availability. It creates a draft in your browser without saving it in browser storage or sending it to our application server. When you open WhatsApp, the draft text is passed to WhatsApp in the link; WhatsApp processes it under its own privacy policy. Sparked receives the message and your WhatsApp account contact information when you send it. We use those details to respond to your inquiry. This is not consent to bulk marketing or automated text messages.</p>
+<p>WhatsApp is operated by Meta; see <a href="https://www.whatsapp.com/legal/privacy-policy">WhatsApp’s privacy policy</a>. TikTok and WhatsApp are separate services. We operate from the United States, so information you send may be processed in the US and other countries where our service providers operate. Please do not send identity documents, payment details, passwords or verification codes in an initial inquiry.</p>
 
 <p><strong>If you tap &ldquo;Apply now&rdquo; on one of our TikTok videos.</strong> That
 opens a form inside the TikTok app. We ask only for your <strong>name and email
@@ -764,10 +436,9 @@ and tax obligations require. Ask us to delete your information and we will, exce
 we are legally required to keep it.</p>
 
 <h2>Your choices</h2>
-<p>Email <a href="mailto:%(email)s">%(email)s</a> to see, correct, or delete the
+<p>Message us on <a href="https://wa.me/13053179940">WhatsApp at +1 305-317-9940</a> or email <a href="mailto:%(email)s">%(email)s</a> to see, correct, or delete the
 information we hold about you, or to withdraw a permission you previously granted.
-Depending on where you live you may have additional rights under laws such as the
-California Consumer Privacy Act; we honor those requests regardless of where you live.</p>
+Depending on where you live, applicable privacy law may provide rights to access, correction, deletion, objection or withdrawal of consent. Contact us to make a request; we will respond as required by applicable law.</p>
 
 <h2>Children</h2>
 <p>Our network is for adults. We do not knowingly work with, or collect information from,
@@ -787,7 +458,7 @@ def terms_body():
 <p class="lede">Last updated %(updated)s</p>
 
 <h2>This site</h2>
-<p>This website is operated by %(company)s, a Delaware corporation. By using it you agree
+<p>This website is operated by %(company)s. By using it you agree
 to these terms. The content here is provided for information about our talent network.</p>
 
 <h2>What this site is not</h2>
@@ -796,7 +467,7 @@ of any particular result on TikTok or any other platform. Creator earnings depen
 factors outside our control, and outcomes such as account reinstatements, stream-key
 grants, and content distribution are decided by TikTok, not by us. Any working
 relationship between you and us is governed by the separate agreement we sign with you,
-which prevails over anything stated here.</p>
+which prevails over anything stated here. UK, Brazil and Mexico pages collect expressions of interest only. LIVE and Shop participation must be confirmed separately; inquiries do not guarantee launch, acceptance, work or earnings.</p>
 
 <h2>Independence</h2>
 <p>%(disclaimer)s</p>
@@ -822,10 +493,9 @@ for indirect or consequential losses arising from your use of it.</p>
 
 def main():
     slugs = [
-        page("", "Sparked Live Network — Keep 100% of Your TikTok LIVE Diamonds",
-             "A U.S. TikTok LIVE creator network that takes zero percent of your gifts. "
-             "Account protection, computer streaming setup, head-to-head battles, and "
-             "one-on-one growth coaching.",
+        page("", "Sparked Live — Creator Support, LIVE & International Opportunities",
+             "Explore Sparked LIVE creator support, US applications, Shop inquiries and "
+             "UK, Brazil and Mexico interest. Connect directly on WhatsApp.",
              index_body()),
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
@@ -836,16 +506,23 @@ def main():
              "where the invitation code lives if you need one.",
              invitation_code_body()),
         page("managers", "Work With Us — Talent Managers and Recruiters",
-             "Freelance talent manager and recruiter roles at Sparked Live Network. "
-             "Paid on roster performance, never out of a creator's diamonds.",
+             "Connect with Sparked about local creator management and recruiting. "
+             "Share your country, experience, availability and proposed rates.",
              managers_body()),
         page("privacy", "Privacy Policy — Sparked Live Network",
-             "How Sparked Live Network Inc. collects, uses, and protects your "
+             "How Sparked Live collects, uses, and protects your "
              "information.", privacy_body(), legal=True),
         page("terms", "Terms of Use — Sparked Live Network",
              "Terms governing use of the Sparked Live Network website.",
              terms_body(), legal=True),
     ]
+
+    slugs.extend([
+        page("international", "International Creator Opportunities — Sparked Live", "Explore UK, Brazil and Mexico LIVE and Shop interest with Sparked. Regional approvals are pending confirmation.", international_body(u), territory=True),
+        page("shop", "Shop Creator & Partner Interest — Sparked Live", "Discuss product content, affiliate and LIVE shopping interests with Sparked. Shop approval and terms must be confirmed separately.", shop_body(u), territory=True),
+    ])
+    for slug, market in MARKETS.items():
+        slugs.append(page(slug, market["name"] + " — Sparked Live", market["lede"], country_body(slug, u), lang=market["lang"], territory=True))
 
     # Static assets (the how-to video and its poster). Copied rather than
     # generated, so the build stays reproducible from a clean checkout.
@@ -864,7 +541,7 @@ def main():
 
     if BASE_URL:
         urls = "".join(
-            "<url><loc>%s/%s</loc></url>" % (BASE_URL, s + "/" if s else "")
+            "<url><loc>%s%s</loc></url>" % (BASE_URL, u("/" + (s + "/" if s else "")))
             for s in slugs)
         (OUT / "sitemap.xml").write_text(
             '<?xml version="1.0" encoding="UTF-8"?>'

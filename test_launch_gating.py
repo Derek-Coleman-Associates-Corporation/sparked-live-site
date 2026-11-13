@@ -25,13 +25,14 @@ PAGES = ["index.html", "apply/index.html", "managers/index.html",
          "privacy/index.html", "terms/index.html"]
 
 
-def build(**env):
+def build(pages_to_read=PAGES, **env):
     """Build into a throwaway dist and return {page: html} plus stdout."""
     tmp = Path(tempfile.mkdtemp())
     work = tmp / "site"
     # Copy the sources the generator needs; it always emits to <script>/dist.
     work.mkdir()
     (work / "generate_site.py").write_bytes(GEN.read_bytes())
+    (work / "interest_content.py").write_bytes((HERE / "interest_content.py").read_bytes())
     if (HERE / "assets").is_dir():
         subprocess.run(["cp", "-R", str(HERE / "assets"), str(work / "assets")],
                        check=True)
@@ -41,7 +42,7 @@ def build(**env):
                           env=full, capture_output=True, text=True)
     assert proc.returncode == 0, f"generator failed:\n{proc.stderr}"
     out = {}
-    for page in PAGES:
+    for page in pages_to_read:
         p = work / "dist" / page
         if p.exists():
             out[page] = p.read_text(encoding="utf-8")
