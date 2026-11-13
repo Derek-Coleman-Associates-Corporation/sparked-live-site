@@ -27,7 +27,7 @@ import html
 import os
 import shutil
 from pathlib import Path
-from interest_content import COPY, MARKETS, PHONE, WHATSAPP, wa, interest_form, market_cards, country_body, international_body, shop_body
+from interest_content import COPY, MARKETS, PHONE, WHATSAPP, TIKTOK_PROFILE, wa, interest_form, market_cards, country_body, international_body, shop_body
 
 STATUS = os.environ.get("NETWORK_STATUS", "prelaunch").strip().lower()
 
@@ -245,10 +245,10 @@ def page(slug, title, description, body, legal=False, lang="en", territory=False
 <style>{CSS}</style>{ga_snippet()}</head><body>
 <a class="skip-link" href="#main">{c['skip']}</a>
 <header class="site"><div class="wrap"><a class="brand" href="{u('/')}">Sparked <span>Live</span><small>CREATOR NETWORK</small></a>
-<nav aria-label="{c['home']}"><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/shop/')}">Shop</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a class="nav-contact" href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></nav></div></header>
+<nav aria-label="{c['home']}"><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/shop/')}">Shop</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a class="nav-contact" href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
 <main id="main" class="wrap{' legal' if legal else ''}">{body}</main>
 <footer class="site"><div class="wrap"><div class="fnav"><a href="{u('/')}">{c['home']}</a><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a href="{u('/privacy/')}">{c['privacy']}</a><a href="{u('/terms/')}">{c['terms']}</a></div>
-<p><a href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp {PHONE}</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<p><a href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp {PHONE}</a> · <a href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></p>
 <p>&copy; 2026 {html.escape(COMPANY)} · {html.escape(ADDRESS)}</p><p>{footer_notice}</p><p>{c['footer_status']}</p>
 </div></footer></body></html>"""
     d = OUT / slug if slug else OUT

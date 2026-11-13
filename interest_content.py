@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 
 WHATSAPP = "13053179940"
 PHONE = "+1 305-317-9940"
+TIKTOK_PROFILE = "https://www.tiktok.com/@sparkedlive"
 
 
 def wa(message="Hi Sparked Live, I'd like to learn more."):
@@ -148,7 +149,7 @@ def interest_form(u, lang="en", country="", message=None, managers=False, shop=F
 <a class="btn whatsapp" data-whatsapp-link rel="noopener noreferrer" target="_blank">{e(c['open'])}</a><p>{PHONE}</p></section>
 </form>
 <noscript><p>{e(c['nojs'])}</p></noscript>
-<p>{e(c['fallback'])} <a href="{e(wa(message))}" rel="noopener noreferrer" target="_blank">{e(c['direct'])}</a>.</p>
+<p>{e(c['fallback'])} <a href="{e(wa(message))}" rel="noopener noreferrer" target="_blank">{e(c['direct'])}</a> · <a href="{TIKTOK_PROFILE}" rel="noopener noreferrer" target="_blank">TikTok @sparkedlive ↗</a></p>
 </section><script src="{u('/assets/interest.js')}" defer></script>'''
 
 
