@@ -66,15 +66,16 @@ GA4 = os.environ.get("GA4_MEASUREMENT_ID", "").strip()
 APPLY_LINK = os.environ.get("APPLY_LINK", "").strip() or "https://www.tiktok.com/t/ZTAynpxHM/"
 
 COMPANY = "Derek Coleman & Associates Inc., trading as Sparked Live Network"
-EMAIL = "tiktok@dcassociatesgroup.com"
+EMAIL = "derek@sparkedlive.com"
+API_EMAIL = "api@sparkedlive.com"
 ADDRESS = "1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103"
-UPDATED = "November 12, 2026"
+UPDATED = "November 25, 2026"
 
 OUT = Path(__file__).parent / "dist"
 
 CSS = """
-:root{--bg:#ffffff;--fg:#14181d;--muted:#5b6570;--card:#f6f8fa;--accent:#e8355a;
---accent2:#00c2c7;--border:#e1e6eb;--ok:#0f9d58}
+:root{color-scheme:light dark;--bg:#ffffff;--fg:#14181d;--muted:#5b6570;--card:#f6f8fa;--accent:#e8355a;
+--accent2:#00c2c7;--border:#e1e6eb;--ok:#0f9d58;accent-color:var(--accent)}
 @media(prefers-color-scheme:dark){:root{--bg:#0d1116;--fg:#e9eef4;--muted:#96a3b0;
 --card:#161c23;--accent:#ff5c7c;--accent2:#2ee6ea;--border:#252d36}}
 *{box-sizing:border-box}
@@ -207,6 +208,32 @@ h1{font-size:clamp(2.2rem,5.4vw,4.2rem);max-width:17ch;letter-spacing:-.045em;li
 .message-review{border:1px solid var(--accent2);padding:18px;border-radius:10px;margin-top:24px;background:var(--bg)}
 .message-review h3{margin-top:0}.message-review textarea{font-size:.9rem}
 .country-nav{margin-top:38px;font-size:.87rem}
+.code-block{margin:18px 0 0}
+.code-block figcaption{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.code-block pre{color-scheme:dark;margin:0;padding:16px 18px;border-radius:10px;background:#0d1116;color:#e9eef4;accent-color:#55dbe0;border:1px solid #252d36;overflow-x:auto;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;tab-size:2}
+.code-block pre:focus-visible{outline:3px solid #55dbe0;outline-offset:3px}
+.code-block code{font:inherit;color:inherit}
+.inline-code{font:0.9em/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.pill{display:inline-block;font-size:.78rem;font-weight:650;padding:4px 10px;border-radius:999px;background:var(--card);border:1px solid var(--border);color:var(--fg)}
+.table-wrapper{overflow:auto;max-inline-size:100%;max-block-size:min(540px,80vh);container-type:inline-size;margin:24px 0;border:1px solid var(--border);border-radius:12px;background:var(--bg)}
+.table-wrapper:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
+.api-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.94rem;--label-1:"Endpoint";--label-2:"Purpose";--label-3:"Networks"}
+.api-table caption{text-align:left;font-weight:700;padding:14px 16px;border-bottom:1px solid var(--border);color:var(--fg);background:var(--card)}
+.api-table thead{position:sticky;inset-block-start:0;z-index:2;background:var(--card)}
+.api-table th,.api-table td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+.api-table thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.api-table tbody th{position:sticky;inset-inline-start:0;z-index:1;background:var(--bg);font-weight:700;white-space:nowrap}
+.api-table tbody tr:last-child th,.api-table tbody tr:last-child td{border-bottom:0}
+@container (width < 600px){
+.api-table,.api-table thead,.api-table tbody,.api-table tr,.api-table th,.api-table td{display:block}
+.api-table thead{display:none}
+.api-table tr{padding:12px 14px;border-bottom:1px solid var(--border)}
+.api-table tbody th{position:static;padding:4px 0 8px;border:0;white-space:normal}
+.api-table td{padding:4px 0;border:0}
+.api-table td:nth-child(2)::before{content:var(--label-2) ": ";font-weight:700;color:var(--fg)}
+.api-table td:nth-child(3)::before{content:var(--label-3) ": ";font-weight:700;color:var(--fg)}
+}
 footer.site .fnav{display:flex;flex-wrap:wrap;gap:8px 18px}
 footer.site .fnav a{margin-right:0}
 a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}
@@ -237,18 +264,19 @@ def page(slug, title, description, body, legal=False, lang="en", territory=False
     footer_notice = c["territory_notice"] if territory else DISCLAIMER
     doc = f"""<!doctype html>
 <html lang="{lang}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <title>{html.escape(title)}</title><meta name="description" content="{html.escape(description)}">
 {canon_tag}<meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(description)}"><meta property="og:type" content="website">
 <meta property="og:url" content="{html.escape(canonical)}">
 <style>{CSS}</style>{ga_snippet()}</head><body>
 <a class="skip-link" href="#main">{c['skip']}</a>
-<header class="site"><div class="wrap"><a class="brand" href="{u('/')}">Sparked <span>Live</span><small>CREATOR NETWORK</small></a>
-<nav aria-label="{c['home']}"><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/shop/')}">Shop</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a class="nav-contact" href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
+<header class="site"><div class="wrap"><a class="brand" href="{u('/')}">Sparked <span>Live</span><small>AI SOCIAL PLATFORM</small></a>
+<nav aria-label="{c['home']}"><a href="{u('/api/')}">{c['api']}</a><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/shop/')}">Shop</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a class="nav-contact" href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
 <main id="main" class="wrap{' legal' if legal else ''}">{body}</main>
-<footer class="site"><div class="wrap"><div class="fnav"><a href="{u('/')}">{c['home']}</a><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a href="{u('/privacy/')}">{c['privacy']}</a><a href="{u('/terms/')}">{c['terms']}</a></div>
-<p><a href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp {PHONE}</a> · <a href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a> · <a href="mailto:{EMAIL}">{EMAIL}</a></p>
+<footer class="site"><div class="wrap"><div class="fnav"><a href="{u('/')}">{c['home']}</a><a href="{u('/api/')}">{c['api']}</a><a href="{u('/apply/')}">{c['apply']}</a><a href="{u('/international/')}">{c['international']}</a><a href="{u('/managers/')}">{c['managers']}</a><a href="{u('/privacy/')}">{c['privacy']}</a><a href="{u('/terms/')}">{c['terms']}</a></div>
+<p><a href="mailto:{EMAIL}">{EMAIL}</a> · <a href="mailto:{API_EMAIL}">{API_EMAIL}</a> · <a href="{contact_url}" target="_blank" rel="noopener noreferrer">WhatsApp {PHONE}</a> · <a href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a></p>
 <p>&copy; 2026 {html.escape(COMPANY)} · {html.escape(ADDRESS)}</p><p>{footer_notice}</p><p>{c['footer_status']}</p>
 </div></footer></body></html>"""
     d = OUT / slug if slug else OUT
@@ -261,33 +289,102 @@ def page(slug, title, description, body, legal=False, lang="en", territory=False
 # site. Pre-launch we are an independent applicant; only after LIVE Backstage
 # approval may we describe ourselves as a partner network.
 DISCLAIMER = (
-    "Sparked Live Network is an independent talent network and is not "
-    "affiliated with, endorsed by, or sponsored by TikTok. TikTok is a trademark "
-    "of its respective owner."
+    "Sparked Live is an independent AI social media software platform and creator "
+    "network and is not affiliated with, endorsed by, or sponsored by TikTok or "
+    "Kick.com. TikTok and Kick.com are trademarks of their respective owners."
 ) if not LIVE else (
+    "Sparked Live is an independent AI social media software platform operated by "
+    "Derek Coleman & Associates Inc. In addition to its software and Challenge API, "
     "Sparked Live Network is operating as a TikTok LIVE Creator Network partner "
-    "in the United States only. This does not establish Shop or international approval. "
-    "TikTok is a trademark of its respective owner."
+    "in the United States only. This does not establish Shop, international, or "
+    "Kick.com approval or affiliation. TikTok and Kick.com are trademarks of their "
+    "respective owners."
 )
 
+CHALLENGE_EXAMPLE = html.escape("""POST https://api.sparkedlive.com/v1/challenges
+Authorization: Bearer sk_live_sparked_...
+Content-Type: application/json
+
+{
+  "title": "Weekend 10K Live Goal",
+  "networks": ["tiktok", "kick"],
+  "rules": {
+    "metric": "verified_stream_milestones",
+    "window_hours": 48,
+    "ai_moderation": true
+  },
+  "webhook_url": "https://app.example.com/webhooks/sparked"
+}""")
+
+WEBHOOK_EXAMPLE = html.escape("""{
+  "event": "challenge.milestone.verified",
+  "challenge_id": "chl_01JFK92814",
+  "network": "kick",
+  "creator_handle": "@sparkedcreator",
+  "ai_verification": {
+    "status": "verified",
+    "confidence": 0.98
+  },
+  "leaderboard_rank": 1,
+  "timestamp": "2026-11-25T20:15:00Z"
+}""")
+
+
 def index_body():
-    badge = "US LIVE creator applications open" if LIVE else "US LIVE founding-creator interest"
-    status = "" if LIVE else '<div class="note">Our TikTok LIVE Backstage network application is in review. We are gathering interest while approval is pending.</div>'
+    badge = "AI Social Media Platform · Challenge API & LIVE" if LIVE else "AI Social Media Platform · Challenge API"
+    status = "" if LIVE else '<div class="note">Sparked Live’s AI software and Challenge Management API are built independently to work alongside TikTok and Kick.com. Separately, our TikTok LIVE Backstage network application is in review while approval is pending.</div>'
     return f"""<section class="hero home-hero"><div><span class="badge">{badge}</span>
-<h1>Your LIVE.<br>Your next level.</h1><p class="lede">Build a stream people come back for. Sparked connects creators with practical coaching, streaming support and a person to talk to.</p>
-<a class="btn" href="{u('/apply/')}">Apply to join</a><a class="btn alt" href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">Talk to us on WhatsApp</a>
-<p class="fine">US LIVE applications · International expressions of interest</p></div>
-<aside class="coaching-panel"><p class="eyebrow">Coaching in practice</p><h2>A stronger stream starts with a plan.</h2><ol class="steps"><li><strong>Make your opening count.</strong><br>Give new viewers a reason to stay.</li><li><strong>Build a repeatable format.</strong><br>Find a schedule and structure that fit you.</li><li><strong>Review and improve.</strong><br>Turn your stream experience into a next step.</li></ol></aside></section>
+<h1>AI challenges for<br>TikTok &amp; Kick.com.</h1><p class="lede">Sparked Live is an AI social media software company operating ancillary to major live networks like TikTok and Kick.com. Our Challenge Management API lets creators, communities, and developers launch, score, and automate live interactive challenges in real time.</p>
+<a class="btn" href="{u('/api/')}">Explore Challenge API</a><a class="btn alt" href="{u('/apply/')}">Apply to join</a>
+<p class="fine">REST &amp; Webhook API for TikTok &amp; Kick.com · US LIVE creator support · International interest</p></div>
+<aside class="coaching-panel"><p class="eyebrow">Challenge Management API</p><h2>Launch &amp; track challenges with one API call.</h2><div class="pill-row"><span class="pill">TikTok LIVE</span><span class="pill">Kick.com</span><span class="pill">AI Scoring</span><span class="pill">Webhooks</span></div>
+<figure class="code-block"><figcaption id="home-api-caption">Example: Create a multi-network live challenge</figcaption><pre role="region" aria-labelledby="home-api-caption" tabindex="0"><code class="language-http">{CHALLENGE_EXAMPLE}</code></pre></figure></aside></section>
 {status}
-<div class="value-strip"><p><strong>0% network cut</strong><span>of your LIVE gifts</span></p><p><strong>Practical support</strong><span>for your setup and stream</span></p><p><strong>Real conversations</strong><span>with the Sparked team</span></p></div>
-<p class="fine">Sparked does not take a cut of creators’ LIVE gifts. TikTok’s own rewards rules, conversion, deductions and payout conditions still apply. Earnings are not guaranteed. Shop collaborations have separate terms.</p>
-<h2 id="what-you-get">Support for the work behind the LIVE</h2>
-<div class="grid"><article class="card"><span class="eyebrow">01 / Your stream</span><h3>Get comfortable on camera</h3><p>Work on your opening, stream format, audience interaction and schedule. Build habits you can maintain.</p></article><article class="card"><span class="eyebrow">02 / Your setup</span><h3>Make your setup work for you</h3><p>Get guidance on OBS, sound, lighting, overlays and computer streaming. TikTok controls access to features and stream keys.</p></article><article class="card"><span class="eyebrow">03 / Your community</span><h3>Find your people</h3><p>Discuss creator collaborations, LIVE matches and how to respond when a stream or account needs attention. Platform outcomes cannot be guaranteed.</p></article></div>
-<section class="founder"><p class="eyebrow">Meet the founder</p><h2>Built from the viewer’s side of LIVE.</h2><p>Derek Coleman founded Sparked after spending time on TikTok LIVE as a gifter. That perspective shapes our approach: understand why people stay, help creators find a repeatable format, and make support easy to reach.</p><a href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer">Meet Sparked on TikTok ↗</a></section>
-<h2>Choose your next step</h2><div class="grid"><article class="card"><h3>US LIVE creators</h3><p>See the application steps and continue to TikTok’s official flow.</p><a class="text-link" href="{u('/apply/')}">Explore LIVE →</a></article><article class="card"><h3>Shop creators and partners</h3><p>Tell us about your product content and affiliate interests. Shop development is separate from LIVE enrollment.</p><a class="text-link" href="{u('/shop/')}">Discuss Shop →</a></article><article class="card"><h3>Managers and recruiters</h3><p>Share your creator experience, availability and proposed scope.</p><a class="text-link" href="{u('/managers/')}">Work with Sparked →</a></article></div>
-<h2>Help shape our international expansion</h2><p>UK, Brazil and Mexico: expressions of interest only while local operations and program approvals are assessed.</p>{market_cards(u)}
-<h2>Before you apply</h2><details><summary>Who can apply for US LIVE?</summary><p>Adults based in the US can discuss eligibility with us. Tell us if you already belong to another network. We confirm current TikTok criteria and any streaming expectations before onboarding.</p></details><details><summary>Does Sparked take a cut of my LIVE gifts?</summary><p>Sparked’s network cut is zero. This is separate from TikTok’s platform rules and payout calculations. It is not an earnings guarantee or a statement about Shop commission terms.</p></details><details><summary>Does registering interest sign me up?</summary><p>No. A WhatsApp conversation does not enroll you. US LIVE network invitations are accepted inside TikTok. Any work or commercial arrangement needs its own agreed terms.</p></details><details><summary>Can I leave a network?</summary><p>Ask us about the current release process and any applicable agreement before joining. TikTok’s current rules and your agreement govern the process.</p></details>
-<section class="closing"><h2>Let’s talk about what you want to build.</h2><a class="btn" href="{u('/apply/')}">Find your application path</a><a class="btn alt" href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">Message Sparked</a></section>"""
+<div class="value-strip"><p><strong>Cross-network API</strong><span>Works ancillary with TikTok &amp; Kick.com</span></p><p><strong>AI challenge engine</strong><span>Automated tracking, scoring &amp; safety</span></p><p><strong>0% network cut</strong><span>Creators keep native platform payouts</span></p></div>
+<p class="fine">Sparked Live builds independent software and does not take a cut of creators’ LIVE gifts. TikTok’s and Kick.com’s own rules, payouts, and platform terms apply. Earnings and platform outcomes are not guaranteed.</p>
+<h2 id="platform">AI social infrastructure built alongside major live networks</h2>
+<div class="grid"><article class="card"><span class="eyebrow">01 / Challenge API</span><h3>Programmatic challenge lifecycles</h3><p>Create, schedule, update, and settle creator challenges across TikTok and Kick.com through versioned REST endpoints, scoped API keys, and signed real-time webhooks.</p></article><article class="card"><span class="eyebrow">02 / AI Orchestration</span><h3>Automated scoring &amp; stream intelligence</h3><p>AI workflows normalize live event telemetry, verify milestone completions, generate stream recaps, and flag anomalous entries without manual spreadsheet tracking.</p></article><article class="card"><span class="eyebrow">03 / Ancillary Layer</span><h3>Keep your native audience &amp; accounts</h3><p>Sparked Live works alongside TikTok and Kick.com using authorized integrations—creators retain ownership of their channels, payouts, and credentials.</p></article></div>
+<section class="founder"><p class="eyebrow">About the company</p><h2>Software engineered from inside live creator communities.</h2><p>Operated by Delaware C-Corporation Derek Coleman &amp; Associates Inc. in Philadelphia, PA, Sparked Live started from firsthand experience inside live creator rooms and evolved into an AI-driven challenge automation and creator-operations platform spanning TikTok and Kick.com.</p><p><a href="{u('/api/')}">Read the Challenge API overview →</a> · <a href="mailto:{API_EMAIL}">Request developer access</a> · <a href="{TIKTOK_PROFILE}" target="_blank" rel="noopener noreferrer">Meet Sparked on TikTok ↗</a></p></section>
+<h2 id="what-you-get">Choose your path</h2><div class="grid"><article class="card"><h3>Challenge Management API</h3><p>Review REST endpoints, webhook events, and AI verification workflows for TikTok and Kick.com challenge apps.</p><a class="text-link" href="{u('/api/')}">View API docs →</a></article><article class="card"><h3>US LIVE creators</h3><p>Explore creator streaming tools, practical onboarding, and TikTok’s official LIVE application flow.</p><a class="text-link" href="{u('/apply/')}">Explore LIVE →</a></article><article class="card"><h3>Shop &amp; brand partners</h3><p>Discuss product content, affiliate workflows, and Shop opportunities with separate eligibility and terms.</p><a class="text-link" href="{u('/shop/')}">Discuss Shop →</a></article><article class="card"><h3>Managers and recruiters</h3><p>Share your creator operations experience, regional availability, and proposed scope.</p><a class="text-link" href="{u('/managers/')}">Work with Sparked →</a></article></div>
+<h2>International creator expansion</h2><p>UK, Brazil and Mexico: expressions of interest only while local operations and program approvals are assessed.</p>{market_cards(u)}
+<section aria-labelledby="faq-heading"><h2 id="faq-heading">Frequently asked questions</h2><details name="faq"><summary>How does Sparked Live work with TikTok and Kick.com?</summary><p>Sparked Live is an independent AI social media platform and developer API that operates ancillary to major streaming networks such as TikTok and Kick.com. Users connect through authorized workflows to automate challenge creation, progress tracking, leaderboards, and post-stream analytics without sharing account passwords.</p></details><details name="faq"><summary>Who is the Challenge Management API built for?</summary><p>Independent creators, multi-stream communities, interactive overlay builders, and brand-challenge organizers who want one consistent API to manage rules, milestones, AI verification, and webhooks across TikTok and Kick.com.</p></details><details name="faq"><summary>Who can apply for US LIVE creator onboarding?</summary><p>Adults aged 18+ based in the US can discuss eligibility with us. Tell us if you already belong to another network. We confirm current TikTok criteria before onboarding.</p></details><details name="faq"><summary>Does Sparked take a cut of LIVE gifts?</summary><p>No. Sparked’s network cut is zero. Platform payout rules and deductions on TikTok or Kick.com are controlled by each respective network, and earnings are never guaranteed.</p></details><details name="faq"><summary>Does registering interest or contacting us sign me up?</summary><p>No. An email or WhatsApp conversation does not enroll you or bind you to commercial terms. Any API plan, US LIVE invitation, or commercial arrangement requires explicit acceptance under its applicable terms.</p></details></section>
+<section class="closing"><h2>Build live challenges with Sparked Live.</h2><a class="btn" href="{u('/api/')}">Explore Challenge API</a><a class="btn alt" href="mailto:{API_EMAIL}?subject=Sparked%20Live%20API%20Access">Request API access</a><a class="btn alt" href="{html.escape(wa())}" target="_blank" rel="noopener noreferrer">Message on WhatsApp</a></section>"""
+
+
+def api_body():
+    return f"""<section class="hero"><span class="badge">Developer Platform · v1 Preview</span><h1>One API to orchestrate<br>live creator challenges.</h1><p class="lede">Sparked Live provides an AI-powered Challenge Management API that works ancillary to major live social networks including TikTok and Kick.com—standardizing challenge rules, real-time scoring, moderation, and webhooks.</p>
+<a class="btn" href="mailto:{API_EMAIL}?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request API key</a><a class="btn alt" href="#endpoints">View core endpoints</a></section>
+<div class="note"><strong>Ancillary software architecture:</strong> Sparked Live integrates alongside TikTok and Kick.com through authorized webhooks, OAuth-scoped data, and creator-approved connectors. We never ask for platform passwords and do not represent or act on behalf of Kick.com or TikTok.</div>
+<div class="grid"><article class="card"><span class="eyebrow">01 / Unified Model</span><h2>Cross-network challenge schema</h2><p>Define duration, milestone thresholds, participant rosters, and settlement criteria once—then run synchronized live challenges across TikTok and Kick.com streams.</p></article><article class="card"><span class="eyebrow">02 / AI Verification</span><h2>Automated event scoring &amp; safety</h2><p>AI pipelines parse stream events, score goal progress, flag duplicate or anomalous submissions, and generate concise creator &amp; community recap summaries.</p></article><article class="card"><span class="eyebrow">03 / Event-Driven</span><h2>Real-time webhooks &amp; overlays</h2><p>Push verified state changes to OBS browser overlays, Discord bots, mobile apps, or creator dashboards via HMAC-signed HTTPS webhooks.</p></article></div>
+<h2 id="endpoints">Core REST endpoints</h2>
+<p>Base URL: <code class="inline-code">https://api.sparkedlive.com/v1</code> · Authentication: Bearer API key (<code class="inline-code">Authorization: Bearer sk_live_...</code>)</p>
+<div tabindex="0" role="region" aria-labelledby="api-endpoints-caption" class="table-wrapper">
+<table class="api-table">
+<caption id="api-endpoints-caption">Sparked Live Challenge Management API v1 core endpoints</caption>
+<thead><tr><th scope="col">Method &amp; Endpoint</th><th scope="col">Purpose</th><th scope="col">Supported Networks</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>POST /v1/challenges</code></th><td>Create and configure a live challenge with timing, scoring rules, and AI moderation flags.</td><td>TikTok, Kick.com, Multi-network</td></tr>
+<tr><th scope="row"><code>GET /v1/challenges/{{id}}</code></th><td>Fetch current challenge metadata, active status, participant counts, and normalized metrics.</td><td>TikTok, Kick.com</td></tr>
+<tr><th scope="row"><code>POST /v1/challenges/{{id}}/participants</code></th><td>Enroll authorized creator handles or community teams into an active challenge session.</td><td>TikTok, Kick.com</td></tr>
+<tr><th scope="row"><code>POST /v1/challenges/{{id}}/events</code></th><td>Ingest live stream milestones and trigger AI validation against configured challenge rules.</td><td>TikTok, Kick.com, Custom overlays</td></tr>
+<tr><th scope="row"><code>GET /v1/challenges/{{id}}/leaderboard</code></th><td>Return real-time ranked standings, verified progress percentages, and AI stream highlights.</td><td>Cross-network unified</td></tr>
+<tr><th scope="row"><code>POST /v1/webhooks</code></th><td>Register signed callback URLs for <code class="inline-code">challenge.started</code>, <code class="inline-code">milestone.verified</code>, and <code class="inline-code">challenge.completed</code>.</td><td>All events</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="examples">Request &amp; webhook examples</h2>
+<div class="grid">
+<figure class="code-block"><figcaption id="api-create-caption">Create a cross-network challenge</figcaption><pre role="region" aria-labelledby="api-create-caption" tabindex="0"><code class="language-http">{CHALLENGE_EXAMPLE}</code></pre></figure>
+<figure class="code-block"><figcaption id="api-webhook-caption">AI-verified milestone webhook payload</figcaption><pre role="region" aria-labelledby="api-webhook-caption" tabindex="0"><code class="language-json">{WEBHOOK_EXAMPLE}</code></pre></figure>
+</div>
+<h2 id="ai-architecture">AI capabilities under the hood</h2>
+<ul class="check">
+<li><strong>Normalized telemetry across networks:</strong> Harmonizes disparate live engagement and challenge events from TikTok and Kick.com into a single schema.</li>
+<li><strong>AI rule verification &amp; anomaly detection:</strong> Evaluates challenge milestones in near real time and flags inconsistent or abusive inputs before leaderboard updates.</li>
+<li><strong>Automated creator recaps:</strong> Summarizes challenge performance, peak moments, and audience participation for post-stream review.</li>
+<li><strong>Privacy-first authorization:</strong> Operates only on data explicitly authorized by creators or developers; disconnect or revoke API keys at any time.</li>
+</ul>
+<section class="closing"><h2>Ready to integrate Sparked Live?</h2><p>Contact our engineering team at <a href="mailto:{API_EMAIL}">{API_EMAIL}</a> or <a href="mailto:{EMAIL}">{EMAIL}</a> for sandbox credentials, technical architecture walkthroughs, or partner integrations.</p><a class="btn" href="mailto:{API_EMAIL}?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request developer access</a><a class="btn alt" href="{u('/apply/')}">Creator LIVE onboarding</a></section>"""
 
 
 def apply_body():
@@ -390,22 +487,27 @@ def privacy_body():
 <h1>Privacy Policy</h1>
 <p class="lede">Last updated %(updated)s</p>
 
-<p>%(company)s ("we", "us") operates this site and a talent network for TikTok LIVE
-creators. This policy explains what we collect and why. We keep it short because our
+<p>%(company)s ("we", "us") operates this site, the Sparked Live AI social media
+and Challenge Management API platform, and a creator network for live streamers.
+This policy explains what we collect and why. We keep it short because our
 practice is genuinely simple.</p>
 
 <h2>What we collect</h2>
+<p><strong>API developers and platform users.</strong> When you request API access or use
+the Sparked Live Challenge Management API alongside TikTok or Kick.com, we collect your
+business contact information, API configuration metadata, authorized challenge events,
+and webhook delivery logs necessary to operate and secure the service.</p>
 <p><strong>Applicants and creators.</strong> When you apply, you give us your TikTok
-handle, contact details, and information about your streaming activity. If you join our
+or Kick.com handle, contact details, and information about your streaming activity. If you join our
 roster we also keep the records needed to manage the relationship &mdash; performance
 statistics made available to us through TikTok's LIVE Backstage system, and our
 correspondence with you.</p>
-<p><strong>If you connect your TikTok account to a tool we operate.</strong> Some of our
-creator tools ask you to authorize access through TikTok's official login. In that case
+<p><strong>If you connect your TikTok or Kick.com account to a tool we operate.</strong> Some of our
+creator tools ask you to authorize access through a network's official login or API. In that case
 we receive only the information covered by the permissions you approve &mdash; typically
-your public profile and your own content statistics. We use it to show you and your
-manager your own numbers. We do not access data belonging to people who have not
-authorized us, and you can disconnect at any time from your TikTok settings, which
+your public profile and your own content or stream statistics. We use it to power challenge
+tracking and show you and your authorized team your own numbers. We do not access data belonging to people who have not
+authorized us, and you can disconnect at any time from your TikTok or Kick.com settings, which
 immediately ends our access.</p>
 <p><strong>Visitors.</strong> Our hosting provider processes technical request information to serve this website. If analytics are enabled, they may process device and browsing information. Do not include personal or sensitive information in page URLs.</p>
 
@@ -461,7 +563,8 @@ def terms_body():
 
 <h2>This site</h2>
 <p>This website is operated by %(company)s. By using it you agree
-to these terms. The content here is provided for information about our talent network.</p>
+to these terms. The content here is provided for information about the Sparked Live
+AI social media platform, Challenge Management API, and creator network.</p>
 
 <h2>What this site is not</h2>
 <p>Nothing on this site is an offer of employment, a guarantee of earnings, or a promise
@@ -495,10 +598,15 @@ for indirect or consequential losses arising from your use of it.</p>
 
 def main():
     slugs = [
-        page("", "Sparked Live — Creator Support, LIVE & International Opportunities",
-             "Explore Sparked LIVE creator support, US applications, Shop inquiries and "
-             "UK, Brazil and Mexico interest. Connect directly on WhatsApp.",
+        page("", "Sparked Live — AI Social Media Platform & Challenge Management API",
+             "Sparked Live is an AI social media platform and Challenge Management API "
+             "working ancillary with TikTok and Kick.com so creators and developers can "
+             "launch, score, and manage live challenges.",
              index_body()),
+        page("api", "Challenge Management API — Sparked Live",
+             "Explore the Sparked Live Challenge Management REST API, webhooks, and AI "
+             "scoring workflows built to work alongside TikTok and Kick.com.",
+             api_body()),
         page("apply", "Apply — Sparked Live Network",
              "Apply to join Sparked Live Network. Two minutes, and a person reads every "
              "application.", apply_body()),
@@ -534,11 +642,13 @@ def main():
 
     (OUT / "404.html").write_text(
         "<!doctype html><html lang=en><head><meta charset=utf-8>"
-        "<title>Not found — Sparked Live Network</title><style>%s</style></head>"
+        "<meta name=viewport content='width=device-width,initial-scale=1.0'>"
+        "<meta name=color-scheme content='light dark'>"
+        "<title>Not found — Sparked Live</title><style>%s</style></head>"
         "<body><main class=wrap><h1>That page doesn't exist</h1>"
-        "<p class=lede>Try the <a href='%s'>home page</a> or "
-        "<a href='%s'>apply to join</a>.</p></main></body></html>"
-        % (CSS, u("/"), u("/apply/")),
+        "<p class=lede>Try the <a href='%s'>home page</a>, "
+        "<a href='%s'>Challenge API</a>, or <a href='%s'>apply to join</a>.</p></main></body></html>"
+        % (CSS, u("/"), u("/api/"), u("/apply/")),
         encoding="utf-8")
 
     if BASE_URL:

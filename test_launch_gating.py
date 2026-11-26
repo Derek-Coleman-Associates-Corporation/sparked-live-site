@@ -21,7 +21,7 @@ PARTNER_CLAIM = "operating as a TikTok LIVE Creator Network partner"
 DISCLAIMER = "not affiliated with, endorsed by, or sponsored by TikTok"
 IN_REVIEW = "network application is in review"
 
-PAGES = ["index.html", "apply/index.html", "managers/index.html",
+PAGES = ["index.html", "api/index.html", "apply/index.html", "managers/index.html",
          "privacy/index.html", "terms/index.html"]
 
 

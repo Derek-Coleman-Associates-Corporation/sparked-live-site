@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 from urllib.parse import urlparse, unquote
 from test_launch_gating import build, HERE
 
-SLUGS = ['', 'apply', 'managers', 'invitation-code', 'privacy', 'terms',
+SLUGS = ['', 'api', 'apply', 'managers', 'invitation-code', 'privacy', 'terms',
          'international', 'shop', 'uk', 'brazil', 'mexico']
 PAGES = [(slug + '/' if slug else '') + 'index.html' for slug in SLUGS]
 
@@ -26,9 +26,12 @@ class InterestFlow(unittest.TestCase):
                              BACKSTAGE_APPROVAL='test approval', APPLY_LINK='')
 
     def test_us_application_and_international_boundaries(self):
-        self.assertEqual(len(self.pages), 11)
+        self.assertEqual(len(self.pages), 12)
         home = self.pages['index.html']
+        self.assertIn('href="/api/">Explore Challenge API', home)
         self.assertIn('href="/apply/">Apply to join', home)
+        self.assertIn('TikTok', self.pages['api/index.html'])
+        self.assertIn('Kick.com', self.pages['api/index.html'])
         self.assertNotIn('mailto:tiktok@dcassociatesgroup.com?subject=Creator', home)
         self.assertIn('href="https://www.tiktok.com/t/ZTAynpxHM/"', self.pages['apply/index.html'])
         for market in ['uk', 'brazil', 'mexico', 'shop', 'international']:

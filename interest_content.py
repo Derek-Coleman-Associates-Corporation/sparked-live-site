@@ -13,7 +13,7 @@ def wa(message="Hi Sparked Live, I'd like to learn more."):
 
 COPY = {
     "en": {
-        "home": "Home", "apply": "Apply", "international": "International",
+        "home": "Home", "api": "Challenge API", "apply": "Apply", "international": "International",
         "managers": "Work with us", "contact": "Message us", "privacy": "Privacy",
         "terms": "Terms", "skip": "Skip to content", "form_title": "Start a conversation",
         "intro": "Prepare a short introduction, review it, then send it in WhatsApp. No email required.",
@@ -43,7 +43,7 @@ COPY = {
         "territory_notice": "Sparked is exploring this market and is not claiming an approved local TikTok LIVE network or Shop agency. TikTok is a trademark of its owner.",
     },
     "pt-BR": {
-        "home": "Início", "apply": "Participar", "international": "Internacional",
+        "home": "Início", "api": "API de Desafios", "apply": "Participar", "international": "Internacional",
         "managers": "Trabalhe conosco", "contact": "Fale conosco", "privacy": "Privacidade (inglês)",
         "terms": "Termos (inglês)", "skip": "Ir para o conteúdo", "form_title": "Vamos conversar",
         "intro": "Prepare uma breve apresentação, revise e envie pelo WhatsApp. Não é necessário informar e-mail.",
@@ -73,7 +73,7 @@ COPY = {
         "territory_notice": "A Sparked está avaliando este mercado e não afirma ter uma rede local de TikTok LIVE ou agência de Shop aprovada. TikTok é uma marca de seu respectivo titular.",
     },
     "es-MX": {
-        "home": "Inicio", "apply": "Participar", "international": "Internacional",
+        "home": "Inicio", "api": "API de Retos", "apply": "Participar", "international": "Internacional",
         "managers": "Trabaja con nosotros", "contact": "Contáctanos", "privacy": "Privacidad (inglés)",
         "terms": "Términos (inglés)", "skip": "Ir al contenido", "form_title": "Conversemos",
         "intro": "Prepara una breve presentación, revísala y envíala por WhatsApp. No necesitas correo electrónico.",

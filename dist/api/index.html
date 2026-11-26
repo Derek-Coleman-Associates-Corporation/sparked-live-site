@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<title>Challenge Management API — Sparked Live</title><meta name="description" content="Explore the Sparked Live Challenge Management REST API, webhooks, and AI scoring workflows built to work alongside TikTok and Kick.com.">
+<link rel="canonical" href="https://sparkedlive.com/api/"><meta property="og:title" content="Challenge Management API — Sparked Live">
+<meta property="og:description" content="Explore the Sparked Live Challenge Management REST API, webhooks, and AI scoring workflows built to work alongside TikTok and Kick.com."><meta property="og:type" content="website">
+<meta property="og:url" content="https://sparkedlive.com/api/">
+<style>
+:root{color-scheme:light dark;--bg:#ffffff;--fg:#14181d;--muted:#5b6570;--card:#f6f8fa;--accent:#e8355a;
+--accent2:#00c2c7;--border:#e1e6eb;--ok:#0f9d58;accent-color:var(--accent)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1116;--fg:#e9eef4;--muted:#96a3b0;
+--card:#161c23;--accent:#ff5c7c;--accent2:#2ee6ea;--border:#252d36}}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,
+Helvetica,Arial,sans-serif;background:var(--bg);color:var(--fg);
+-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:940px;margin:0 auto;padding:0 20px}
+header.site{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;
+top:0;background:var(--bg);z-index:10}
+header.site .wrap{display:flex;justify-content:space-between;align-items:center;
+gap:12px;flex-wrap:wrap}
+.brand{font-weight:800;color:var(--fg);font-size:1.05rem;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+nav a{margin-left:20px;color:var(--muted);font-size:.94rem}
+.hero{padding:64px 0 44px;border-bottom:1px solid var(--border)}
+.badge{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.04em;
+text-transform:uppercase;color:var(--accent2);border:1px solid var(--accent2);
+border-radius:99px;padding:4px 12px;margin-bottom:18px}
+h1{font-size:2.6rem;line-height:1.12;margin:0 0 18px;letter-spacing:-.025em}
+@media(max-width:640px){h1{font-size:1.95rem}.hero{padding:40px 0 32px}}
+h2{font-size:1.45rem;margin:2.2em 0 .6em;letter-spacing:-.015em}
+h3{font-size:1.05rem;margin:1.6em 0 .35em}
+p.lede{color:var(--muted);font-size:1.16rem;max-width:44em;margin:0 0 26px}
+.btn{display:inline-block;background:var(--accent);color:#fff;font-weight:700;
+padding:13px 26px;border-radius:8px;margin:6px 10px 6px 0}
+.btn:hover{opacity:.9;text-decoration:none}
+.btn.alt{background:transparent;color:var(--fg);border:1px solid var(--border)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:16px;margin:26px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:11px;
+padding:20px}
+.card h3{margin:0 0 7px;font-size:1.02rem}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.big{font-size:2.1rem;font-weight:800;color:var(--accent);line-height:1;
+margin:0 0 6px;letter-spacing:-.02em}
+ul.check{list-style:none;padding:0;margin:14px 0}
+ul.check li{padding:9px 0 9px 30px;position:relative;border-bottom:1px solid var(--border)}
+ul.check li:before{content:"\2713";position:absolute;left:4px;color:var(--ok);font-weight:700}
+ul.no{list-style:none;padding:0;margin:14px 0}
+ul.no li{padding:9px 0 9px 30px;position:relative;border-bottom:1px solid var(--border)}
+ul.no li:before{content:"\00D7";position:absolute;left:6px;color:var(--muted);
+font-weight:700;font-size:1.15rem}
+details{border-bottom:1px solid var(--border);padding:13px 0}
+summary{cursor:pointer;font-weight:600}
+details p{color:var(--muted);margin:9px 0 0}
+.note{background:var(--card);border-left:3px solid var(--accent2);padding:14px 18px;
+border-radius:0 8px 8px 0;margin:26px 0;color:var(--muted);font-size:.94rem}
+form.apply{margin:24px 0}
+form.apply .f{margin-bottom:18px}
+form.apply label{display:block;font-weight:600;margin-bottom:6px}
+form.apply .hint{display:block;font-weight:400;color:var(--muted);font-size:.88rem;
+margin-top:2px}
+form.apply input[type=text],form.apply input[type=email],form.apply input[type=tel],
+form.apply input[type=url],form.apply select,form.apply textarea{width:100%;
+padding:11px 13px;font:inherit;color:var(--fg);background:var(--bg);
+border:1px solid var(--border);border-radius:8px}
+form.apply textarea{min-height:110px;resize:vertical}
+form.apply input:focus,form.apply select:focus,form.apply textarea:focus{outline:none;
+border-color:var(--accent2);box-shadow:0 0 0 3px rgba(0,194,199,.18)}
+form.apply .consent{display:flex;gap:10px;align-items:flex-start;
+background:var(--card);padding:14px 16px;border-radius:8px}
+form.apply .consent input{margin-top:4px;flex:none}
+form.apply .consent label{font-weight:400;font-size:.93rem;margin:0}
+form.apply button{background:var(--accent);color:#fff;font:inherit;font-weight:700;
+padding:13px 26px;border:0;border-radius:999px;cursor:pointer}
+form.apply button:hover{opacity:.9}
+form.apply .hp{position:absolute;left:-9999px}
+.req{color:var(--accent)}
+/* Vertical phone capture — constrain by HEIGHT or it swallows a desktop page. */
+figure.howto{margin:26px 0;text-align:center}
+figure.howto video{display:block;margin:0 auto;max-height:74vh;max-width:100%;
+width:auto;height:auto;border-radius:16px;border:1px solid var(--border);
+background:#000}
+figure.howto figcaption{color:var(--muted);font-size:.9rem;margin-top:12px}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0}
+ol.steps li{counter-increment:s;position:relative;padding:11px 0 11px 46px;
+border-bottom:1px solid var(--border)}
+ol.steps li:before{content:counter(s);position:absolute;left:0;top:11px;
+width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;
+font-size:.85rem;font-weight:700;display:flex;align-items:center;
+justify-content:center}
+footer.site{border-top:1px solid var(--border);margin-top:60px;padding:30px 0 50px;
+color:var(--muted);font-size:.89rem}
+footer.site a{color:var(--muted)}
+footer.site .fnav{margin-bottom:14px}
+footer.site .fnav a{margin-right:18px}
+.legal h2{font-size:1.15rem}
+.legal p,.legal li{color:var(--muted)}
+/* A clearer application hierarchy, with comfortable mobile targets. */
+:root{--accent:#b92447;--accent2:#087b80}
+@media(prefers-color-scheme:dark){:root{--accent:#ff8199;--accent2:#55dbe0}}
+.wrap{max-width:1100px}
+.brand{font-size:1.25rem;line-height:1.2;white-space:nowrap}
+.brand small{display:block;font-size:.58rem;letter-spacing:.18em;margin-top:5px}
+nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px}
+nav a{margin:0;padding:8px 0;font-size:.9rem}
+.nav-contact{font-weight:700;color:var(--fg)}
+.hero{padding:68px 0 46px}
+h1{font-size:clamp(2.2rem,5.4vw,4.2rem);max-width:17ch;letter-spacing:-.045em;line-height:1.07}
+.hero .lede{max-width:47em;margin-top:22px}
+.home-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:44px;align-items:center}
+.home-hero h1{max-width:13ch}
+.home-hero .lede{font-size:1.1rem}
+.coaching-panel{background:var(--card);border:1px solid var(--border);border-top:4px solid var(--accent);border-radius:14px;padding:26px}
+.coaching-panel h2{margin:12px 0 20px;font-size:1.6rem;line-height:1.3}
+.coaching-panel .steps{margin:0}.coaching-panel .steps li:last-child{border:0}
+.eyebrow{font-size:.73rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.btn,form.apply button{background:#b92447;color:white;border:1px solid transparent;border-radius:9px;line-height:1.4;min-height:46px;text-align:center}
+.btn.alt{background:transparent;color:var(--fg);border-color:var(--border)}
+.btn.whatsapp{background:#126847}
+.fine{font-size:.83rem;color:var(--muted);max-width:76em}
+.value-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:18px 0;border-bottom:1px solid var(--border)}
+.value-strip strong,.value-strip span{display:block}.value-strip span{font-size:.9rem;color:var(--muted)}
+.value-strip strong{font-size:1.12rem}
+.card{padding:25px;border-radius:14px}.card .eyebrow{display:block;margin-bottom:15px}
+.card h2{font-size:1.2rem;margin:0 0 12px}
+.text-link{display:inline-block;font-weight:650;margin-top:16px;padding:6px 0}
+.founder{border-left:4px solid var(--accent);padding:8px 26px;margin:52px 0;max-width:800px}
+.founder h2{margin-top:10px}.founder p{max-width:64ch}
+.market-list{border-top:1px solid var(--border);margin:22px 0 38px}
+.market-link{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:23px 5px;border-bottom:1px solid var(--border);color:var(--fg)}
+.market-link strong{font-size:1.3rem}.market-link small{display:block;color:var(--muted);font-size:.87rem}
+.market-link:hover{color:var(--accent);text-decoration:none;background:var(--card)}
+.closing{padding:26px;margin:48px 0 0;background:var(--card);border-radius:14px}.closing h2{margin:0 0 14px}
+.application-route{margin-top:36px;padding:28px;border:1px solid var(--border);border-radius:14px}.application-route h2{margin-top:10px}
+.interest-panel{scroll-margin-top:110px;margin-top:46px;max-width:820px;padding:28px;background:var(--card);border:1px solid var(--border);border-radius:14px}
+.interest-panel h2{margin-top:0}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.hint{font-size:.87rem;color:var(--muted);display:block}
+.message-review{border:1px solid var(--accent2);padding:18px;border-radius:10px;margin-top:24px;background:var(--bg)}
+.message-review h3{margin-top:0}.message-review textarea{font-size:.9rem}
+.country-nav{margin-top:38px;font-size:.87rem}
+.code-block{margin:18px 0 0}
+.code-block figcaption{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.code-block pre{color-scheme:dark;margin:0;padding:16px 18px;border-radius:10px;background:#0d1116;color:#e9eef4;accent-color:#55dbe0;border:1px solid #252d36;overflow-x:auto;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;tab-size:2}
+.code-block pre:focus-visible{outline:3px solid #55dbe0;outline-offset:3px}
+.code-block code{font:inherit;color:inherit}
+.inline-code{font:0.9em/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.pill{display:inline-block;font-size:.78rem;font-weight:650;padding:4px 10px;border-radius:999px;background:var(--card);border:1px solid var(--border);color:var(--fg)}
+.table-wrapper{overflow:auto;max-inline-size:100%;max-block-size:min(540px,80vh);container-type:inline-size;margin:24px 0;border:1px solid var(--border);border-radius:12px;background:var(--bg)}
+.table-wrapper:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
+.api-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.94rem;--label-1:"Endpoint";--label-2:"Purpose";--label-3:"Networks"}
+.api-table caption{text-align:left;font-weight:700;padding:14px 16px;border-bottom:1px solid var(--border);color:var(--fg);background:var(--card)}
+.api-table thead{position:sticky;inset-block-start:0;z-index:2;background:var(--card)}
+.api-table th,.api-table td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+.api-table thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.api-table tbody th{position:sticky;inset-inline-start:0;z-index:1;background:var(--bg);font-weight:700;white-space:nowrap}
+.api-table tbody tr:last-child th,.api-table tbody tr:last-child td{border-bottom:0}
+@container (width < 600px){
+.api-table,.api-table thead,.api-table tbody,.api-table tr,.api-table th,.api-table td{display:block}
+.api-table thead{display:none}
+.api-table tr{padding:12px 14px;border-bottom:1px solid var(--border)}
+.api-table tbody th{position:static;padding:4px 0 8px;border:0;white-space:normal}
+.api-table td{padding:4px 0;border:0}
+.api-table td:nth-child(2)::before{content:var(--label-2) ": ";font-weight:700;color:var(--fg)}
+.api-table td:nth-child(3)::before{content:var(--label-3) ": ";font-weight:700;color:var(--fg)}
+}
+footer.site .fnav{display:flex;flex-wrap:wrap;gap:8px 18px}
+footer.site .fnav a{margin-right:0}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}
+.skip-link{position:absolute;top:-100px;left:15px;padding:12px;background:var(--bg);z-index:30}.skip-link:focus{top:10px}
+main{overflow-wrap:anywhere}section[id],h2[id]{scroll-margin-top:120px}
+[hidden]{display:none!important}
+@media(max-width:800px){.home-hero{grid-template-columns:1fr;gap:20px}.coaching-panel{max-width:580px}.hero{padding-top:36px}.home-hero h1{max-width:none}header.site{position:relative}header.site .wrap{align-items:flex-start}nav{gap:4px 16px}.badge{font-size:.7rem}.value-strip{gap:12px}.value-strip strong{font-size:1rem}}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr}.wrap{padding:0 18px}.grid{grid-template-columns:1fr}.interest-panel,.application-route,.coaching-panel{padding:20px}.btn{display:block;margin-right:0}.value-strip{grid-template-columns:1fr;gap:0}.value-strip p{margin:9px 0}.value-strip strong{display:inline}.value-strip span{display:inline;margin-left:7px}.founder{padding-left:18px}form.apply button{width:100%}h1{max-width:none}.country-nav{display:block}.country-nav a{display:inline-block}.fnav{line-height:2.4}}
+</style></head><body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site"><div class="wrap"><a class="brand" href="/">Sparked <span>Live</span><small>AI SOCIAL PLATFORM</small></a>
+<nav aria-label="Home"><a href="/api/">Challenge API</a><a href="/apply/">Apply</a><a href="/shop/">Shop</a><a href="/international/">International</a><a href="/managers/">Work with us</a><a class="nav-contact" href="https://wa.me/13053179940?text=Hi+Sparked+Live%2C+I%27d+like+to+learn+more." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
+<main id="main" class="wrap"><section class="hero"><span class="badge">Developer Platform · v1 Preview</span><h1>One API to orchestrate<br>live creator challenges.</h1><p class="lede">Sparked Live provides an AI-powered Challenge Management API that works ancillary to major live social networks including TikTok and Kick.com—standardizing challenge rules, real-time scoring, moderation, and webhooks.</p>
+<a class="btn" href="mailto:api@sparkedlive.com?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request API key</a><a class="btn alt" href="#endpoints">View core endpoints</a></section>
+<div class="note"><strong>Ancillary software architecture:</strong> Sparked Live integrates alongside TikTok and Kick.com through authorized webhooks, OAuth-scoped data, and creator-approved connectors. We never ask for platform passwords and do not represent or act on behalf of Kick.com or TikTok.</div>
+<div class="grid"><article class="card"><span class="eyebrow">01 / Unified Model</span><h2>Cross-network challenge schema</h2><p>Define duration, milestone thresholds, participant rosters, and settlement criteria once—then run synchronized live challenges across TikTok and Kick.com streams.</p></article><article class="card"><span class="eyebrow">02 / AI Verification</span><h2>Automated event scoring &amp; safety</h2><p>AI pipelines parse stream events, score goal progress, flag duplicate or anomalous submissions, and generate concise creator &amp; community recap summaries.</p></article><article class="card"><span class="eyebrow">03 / Event-Driven</span><h2>Real-time webhooks &amp; overlays</h2><p>Push verified state changes to OBS browser overlays, Discord bots, mobile apps, or creator dashboards via HMAC-signed HTTPS webhooks.</p></article></div>
+<h2 id="endpoints">Core REST endpoints</h2>
+<p>Base URL: <code class="inline-code">https://api.sparkedlive.com/v1</code> · Authentication: Bearer API key (<code class="inline-code">Authorization: Bearer sk_live_...</code>)</p>
+<div tabindex="0" role="region" aria-labelledby="api-endpoints-caption" class="table-wrapper">
+<table class="api-table">
+<caption id="api-endpoints-caption">Sparked Live Challenge Management API v1 core endpoints</caption>
+<thead><tr><th scope="col">Method &amp; Endpoint</th><th scope="col">Purpose</th><th scope="col">Supported Networks</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>POST /v1/challenges</code></th><td>Create and configure a live challenge with timing, scoring rules, and AI moderation flags.</td><td>TikTok, Kick.com, Multi-network</td></tr>
+<tr><th scope="row"><code>GET /v1/challenges/{id}</code></th><td>Fetch current challenge metadata, active status, participant counts, and normalized metrics.</td><td>TikTok, Kick.com</td></tr>
+<tr><th scope="row"><code>POST /v1/challenges/{id}/participants</code></th><td>Enroll authorized creator handles or community teams into an active challenge session.</td><td>TikTok, Kick.com</td></tr>
+<tr><th scope="row"><code>POST /v1/challenges/{id}/events</code></th><td>Ingest live stream milestones and trigger AI validation against configured challenge rules.</td><td>TikTok, Kick.com, Custom overlays</td></tr>
+<tr><th scope="row"><code>GET /v1/challenges/{id}/leaderboard</code></th><td>Return real-time ranked standings, verified progress percentages, and AI stream highlights.</td><td>Cross-network unified</td></tr>
+<tr><th scope="row"><code>POST /v1/webhooks</code></th><td>Register signed callback URLs for <code class="inline-code">challenge.started</code>, <code class="inline-code">milestone.verified</code>, and <code class="inline-code">challenge.completed</code>.</td><td>All events</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="examples">Request &amp; webhook examples</h2>
+<div class="grid">
+<figure class="code-block"><figcaption id="api-create-caption">Create a cross-network challenge</figcaption><pre role="region" aria-labelledby="api-create-caption" tabindex="0"><code class="language-http">POST https://api.sparkedlive.com/v1/challenges
+Authorization: Bearer sk_live_sparked_...
+Content-Type: application/json
+
+{
+  &quot;title&quot;: &quot;Weekend 10K Live Goal&quot;,
+  &quot;networks&quot;: [&quot;tiktok&quot;, &quot;kick&quot;],
+  &quot;rules&quot;: {
+    &quot;metric&quot;: &quot;verified_stream_milestones&quot;,
+    &quot;window_hours&quot;: 48,
+    &quot;ai_moderation&quot;: true
+  },
+  &quot;webhook_url&quot;: &quot;https://app.example.com/webhooks/sparked&quot;
+}</code></pre></figure>
+<figure class="code-block"><figcaption id="api-webhook-caption">AI-verified milestone webhook payload</figcaption><pre role="region" aria-labelledby="api-webhook-caption" tabindex="0"><code class="language-json">{
+  &quot;event&quot;: &quot;challenge.milestone.verified&quot;,
+  &quot;challenge_id&quot;: &quot;chl_01JFK92814&quot;,
+  &quot;network&quot;: &quot;kick&quot;,
+  &quot;creator_handle&quot;: &quot;@sparkedcreator&quot;,
+  &quot;ai_verification&quot;: {
+    &quot;status&quot;: &quot;verified&quot;,
+    &quot;confidence&quot;: 0.98
+  },
+  &quot;leaderboard_rank&quot;: 1,
+  &quot;timestamp&quot;: &quot;2026-11-25T20:15:00Z&quot;
+}</code></pre></figure>
+</div>
+<h2 id="ai-architecture">AI capabilities under the hood</h2>
+<ul class="check">
+<li><strong>Normalized telemetry across networks:</strong> Harmonizes disparate live engagement and challenge events from TikTok and Kick.com into a single schema.</li>
+<li><strong>AI rule verification &amp; anomaly detection:</strong> Evaluates challenge milestones in near real time and flags inconsistent or abusive inputs before leaderboard updates.</li>
+<li><strong>Automated creator recaps:</strong> Summarizes challenge performance, peak moments, and audience participation for post-stream review.</li>
+<li><strong>Privacy-first authorization:</strong> Operates only on data explicitly authorized by creators or developers; disconnect or revoke API keys at any time.</li>
+</ul>
+<section class="closing"><h2>Ready to integrate Sparked Live?</h2><p>Contact our engineering team at <a href="mailto:api@sparkedlive.com">api@sparkedlive.com</a> or <a href="mailto:derek@sparkedlive.com">derek@sparkedlive.com</a> for sandbox credentials, technical architecture walkthroughs, or partner integrations.</p><a class="btn" href="mailto:api@sparkedlive.com?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request developer access</a><a class="btn alt" href="/apply/">Creator LIVE onboarding</a></section></main>
+<footer class="site"><div class="wrap"><div class="fnav"><a href="/">Home</a><a href="/api/">Challenge API</a><a href="/apply/">Apply</a><a href="/international/">International</a><a href="/managers/">Work with us</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
+<p><a href="mailto:derek@sparkedlive.com">derek@sparkedlive.com</a> · <a href="mailto:api@sparkedlive.com">api@sparkedlive.com</a> · <a href="https://wa.me/13053179940?text=Hi+Sparked+Live%2C+I%27d+like+to+learn+more." target="_blank" rel="noopener noreferrer">WhatsApp +1 305-317-9940</a> · <a href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a></p>
+<p>&copy; 2026 Derek Coleman &amp; Associates Inc., trading as Sparked Live Network · 1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103</p><p>Sparked Live is an independent AI social media software platform operated by Derek Coleman & Associates Inc. In addition to its software and Challenge API, Sparked Live Network is operating as a TikTok LIVE Creator Network partner in the United States only. This does not establish Shop, international, or Kick.com approval or affiliation. TikTok and Kick.com are trademarks of their respective owners.</p><p>UK, Brazil and Mexico: expressions of interest only. LIVE and Shop approvals are separate.</p>
+</div></footer></body></html>

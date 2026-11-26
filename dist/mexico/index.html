@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="es-MX"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
 <title>México — Sparked Live</title><meta name="description" content="Creadores, managers y reclutadores en México: queremos conocerlos. Cuéntanos si te interesa LIVE, Shop o ambos programas.">
 <link rel="canonical" href="https://sparkedlive.com/mexico/"><meta property="og:title" content="México — Sparked Live">
 <meta property="og:description" content="Creadores, managers y reclutadores en México: queremos conocerlos. Cuéntanos si te interesa LIVE, Shop o ambos programas."><meta property="og:type" content="website">
 <meta property="og:url" content="https://sparkedlive.com/mexico/">
 <style>
-:root{--bg:#ffffff;--fg:#14181d;--muted:#5b6570;--card:#f6f8fa;--accent:#e8355a;
---accent2:#00c2c7;--border:#e1e6eb;--ok:#0f9d58}
+:root{color-scheme:light dark;--bg:#ffffff;--fg:#14181d;--muted:#5b6570;--card:#f6f8fa;--accent:#e8355a;
+--accent2:#00c2c7;--border:#e1e6eb;--ok:#0f9d58;accent-color:var(--accent)}
 @media(prefers-color-scheme:dark){:root{--bg:#0d1116;--fg:#e9eef4;--muted:#96a3b0;
 --card:#161c23;--accent:#ff5c7c;--accent2:#2ee6ea;--border:#252d36}}
 *{box-sizing:border-box}
@@ -140,6 +141,32 @@ h1{font-size:clamp(2.2rem,5.4vw,4.2rem);max-width:17ch;letter-spacing:-.045em;li
 .message-review{border:1px solid var(--accent2);padding:18px;border-radius:10px;margin-top:24px;background:var(--bg)}
 .message-review h3{margin-top:0}.message-review textarea{font-size:.9rem}
 .country-nav{margin-top:38px;font-size:.87rem}
+.code-block{margin:18px 0 0}
+.code-block figcaption{font-size:.8rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.code-block pre{color-scheme:dark;margin:0;padding:16px 18px;border-radius:10px;background:#0d1116;color:#e9eef4;accent-color:#55dbe0;border:1px solid #252d36;overflow-x:auto;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;tab-size:2}
+.code-block pre:focus-visible{outline:3px solid #55dbe0;outline-offset:3px}
+.code-block code{font:inherit;color:inherit}
+.inline-code{font:0.9em/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:1px 6px}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 6px}
+.pill{display:inline-block;font-size:.78rem;font-weight:650;padding:4px 10px;border-radius:999px;background:var(--card);border:1px solid var(--border);color:var(--fg)}
+.table-wrapper{overflow:auto;max-inline-size:100%;max-block-size:min(540px,80vh);container-type:inline-size;margin:24px 0;border:1px solid var(--border);border-radius:12px;background:var(--bg)}
+.table-wrapper:focus-visible{outline:3px solid var(--accent2);outline-offset:3px}
+.api-table{width:100%;border-collapse:separate;border-spacing:0;font-size:.94rem;--label-1:"Endpoint";--label-2:"Purpose";--label-3:"Networks"}
+.api-table caption{text-align:left;font-weight:700;padding:14px 16px;border-bottom:1px solid var(--border);color:var(--fg);background:var(--card)}
+.api-table thead{position:sticky;inset-block-start:0;z-index:2;background:var(--card)}
+.api-table th,.api-table td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:top}
+.api-table thead th{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.api-table tbody th{position:sticky;inset-inline-start:0;z-index:1;background:var(--bg);font-weight:700;white-space:nowrap}
+.api-table tbody tr:last-child th,.api-table tbody tr:last-child td{border-bottom:0}
+@container (width < 600px){
+.api-table,.api-table thead,.api-table tbody,.api-table tr,.api-table th,.api-table td{display:block}
+.api-table thead{display:none}
+.api-table tr{padding:12px 14px;border-bottom:1px solid var(--border)}
+.api-table tbody th{position:static;padding:4px 0 8px;border:0;white-space:normal}
+.api-table td{padding:4px 0;border:0}
+.api-table td:nth-child(2)::before{content:var(--label-2) ": ";font-weight:700;color:var(--fg)}
+.api-table td:nth-child(3)::before{content:var(--label-3) ": ";font-weight:700;color:var(--fg)}
+}
 footer.site .fnav{display:flex;flex-wrap:wrap;gap:8px 18px}
 footer.site .fnav a{margin-right:0}
 a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--accent2);outline-offset:4px}
@@ -150,8 +177,8 @@ main{overflow-wrap:anywhere}section[id],h2[id]{scroll-margin-top:120px}
 @media(max-width:520px){.form-grid{grid-template-columns:1fr}.wrap{padding:0 18px}.grid{grid-template-columns:1fr}.interest-panel,.application-route,.coaching-panel{padding:20px}.btn{display:block;margin-right:0}.value-strip{grid-template-columns:1fr;gap:0}.value-strip p{margin:9px 0}.value-strip strong{display:inline}.value-strip span{display:inline;margin-left:7px}.founder{padding-left:18px}form.apply button{width:100%}h1{max-width:none}.country-nav{display:block}.country-nav a{display:inline-block}.fnav{line-height:2.4}}
 </style></head><body>
 <a class="skip-link" href="#main">Ir al contenido</a>
-<header class="site"><div class="wrap"><a class="brand" href="/">Sparked <span>Live</span><small>CREATOR NETWORK</small></a>
-<nav aria-label="Inicio"><a href="/apply/">Participar</a><a href="/shop/">Shop</a><a href="/international/">Internacional</a><a href="/managers/">Trabaja con nosotros</a><a class="nav-contact" href="https://wa.me/13053179940?text=%C2%A1Hola%2C+Sparked+Live%21+Me+gustar%C3%ADa+registrar+mi+inter%C3%A9s+en+la+expansi%C3%B3n+a+M%C3%A9xico." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
+<header class="site"><div class="wrap"><a class="brand" href="/">Sparked <span>Live</span><small>AI SOCIAL PLATFORM</small></a>
+<nav aria-label="Inicio"><a href="/api/">API de Retos</a><a href="/apply/">Participar</a><a href="/shop/">Shop</a><a href="/international/">Internacional</a><a href="/managers/">Trabaja con nosotros</a><a class="nav-contact" href="https://wa.me/13053179940?text=%C2%A1Hola%2C+Sparked+Live%21+Me+gustar%C3%ADa+registrar+mi+inter%C3%A9s+en+la+expansi%C3%B3n+a+M%C3%A9xico." target="_blank" rel="noopener noreferrer">WhatsApp ↗</a><a class="nav-contact" href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer" aria-label="TikTok @sparkedlive">TikTok ↗</a></nav></div></header>
 <main id="main" class="wrap"><section class="hero"><p class="eyebrow">Sparked Live / México</p><span class="badge">Recibimos expresiones de interés</span><h1>Tu siguiente paso como creador.</h1><p class="lede">Creadores, managers y reclutadores en México: queremos conocerlos. Cuéntanos si te interesa LIVE, Shop o ambos programas.</p><a class="btn" href="#interest">Conversemos</a></section>
 <aside class="note"><strong>Planeando nuestra expansión.</strong> Sparked está explorando oportunidades en el Reino Unido, Brasil y México. Nuestra operación de LIVE en EE. UU. no implica aprobación en estos mercados. La participación regional en LIVE y Shop debe confirmarse por separado antes de incorporar creadores. Registrar tu interés no garantiza lanzamiento, aceptación, trabajo ni ingresos.</aside>
 <div class="grid program-grid"><article class="card"><h2>Para creadores de LIVE</h2><p>¿Buscas orientación para transmitir, construir comunidad, configurar tu equipo o colaborar con otros creadores? Cuéntanos tu experiencia en LIVE y qué apoyo necesitas.</p></article><article class="card"><h2>Para creadores de Shop</h2><p>¿Te interesan los videos de productos, las ventas en vivo o las colaboraciones de afiliados? Cuéntanos tu nicho y experiencia. Shop es un programa separado de los regalos de LIVE, con sus propios requisitos y condiciones comerciales.</p></article><article class="card"><h2>Ayuda a formar el equipo local</h2><p>Queremos conversar con managers y reclutadores locales con experiencia, conocimiento del mercado y relaciones con creadores. Comparte una propuesta de alcance y tarifa. Todo trabajo remunerado requiere un acuerdo separado por escrito.</p></article></div><h2>Qué sigue</h2><ol class="steps"><li>Cuéntanos tu país, programa de interés y experiencia.</li><li>Conversamos sobre tu perfil y el estado actual de la oportunidad local.</li><li>Si surge una oportunidad adecuada, explicamos los requisitos y las condiciones por escrito antes de que decidas.</li></ol>
@@ -172,7 +199,7 @@ main{overflow-wrap:anywhere}section[id],h2[id]{scroll-margin-top:120px}
 <p>¿Prefieres escribir tu propio mensaje? <a href="https://wa.me/13053179940?text=%C2%A1Hola%2C+Sparked+Live%21+Me+gustar%C3%ADa+registrar+mi+inter%C3%A9s+en+la+expansi%C3%B3n+a+M%C3%A9xico." rel="noopener noreferrer" target="_blank">Habla con Sparked por WhatsApp</a> · <a href="https://www.tiktok.com/@sparkedlive" rel="noopener noreferrer" target="_blank">TikTok @sparkedlive ↗</a></p>
 </section><script src="/assets/interest.js" defer></script>
 <nav class="country-nav" aria-label="Markets"><a href="/international/">International / Internacional</a> · <a href="/uk/">UK — English</a> · <a href="/brazil/">Brasil — Português</a> · <a href="/mexico/">México — Español</a></nav></main>
-<footer class="site"><div class="wrap"><div class="fnav"><a href="/">Inicio</a><a href="/apply/">Participar</a><a href="/international/">Internacional</a><a href="/managers/">Trabaja con nosotros</a><a href="/privacy/">Privacidad (inglés)</a><a href="/terms/">Términos (inglés)</a></div>
-<p><a href="https://wa.me/13053179940?text=%C2%A1Hola%2C+Sparked+Live%21+Me+gustar%C3%ADa+registrar+mi+inter%C3%A9s+en+la+expansi%C3%B3n+a+M%C3%A9xico." target="_blank" rel="noopener noreferrer">WhatsApp +1 305-317-9940</a> · <a href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a> · <a href="mailto:tiktok@dcassociatesgroup.com">tiktok@dcassociatesgroup.com</a></p>
+<footer class="site"><div class="wrap"><div class="fnav"><a href="/">Inicio</a><a href="/api/">API de Retos</a><a href="/apply/">Participar</a><a href="/international/">Internacional</a><a href="/managers/">Trabaja con nosotros</a><a href="/privacy/">Privacidad (inglés)</a><a href="/terms/">Términos (inglés)</a></div>
+<p><a href="mailto:derek@sparkedlive.com">derek@sparkedlive.com</a> · <a href="mailto:api@sparkedlive.com">api@sparkedlive.com</a> · <a href="https://wa.me/13053179940?text=%C2%A1Hola%2C+Sparked+Live%21+Me+gustar%C3%ADa+registrar+mi+inter%C3%A9s+en+la+expansi%C3%B3n+a+M%C3%A9xico." target="_blank" rel="noopener noreferrer">WhatsApp +1 305-317-9940</a> · <a href="https://www.tiktok.com/@sparkedlive" target="_blank" rel="noopener noreferrer">TikTok @sparkedlive</a></p>
 <p>&copy; 2026 Derek Coleman &amp; Associates Inc., trading as Sparked Live Network · 1800 JFK Blvd, Suite 300, PMB 92814, Philadelphia, PA 19103</p><p>Sparked está explorando este mercado y no afirma tener una red local de TikTok LIVE ni una agencia de Shop aprobada. TikTok es una marca de su respectivo titular.</p><p>Reino Unido, Brasil y México: solo expresiones de interés. Las aprobaciones de LIVE y Shop son independientes.</p>
 </div></footer></body></html>
