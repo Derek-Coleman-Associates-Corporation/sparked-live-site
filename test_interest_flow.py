@@ -85,15 +85,6 @@ class InterestFlow(unittest.TestCase):
                     if target in STATIC_JSON:
                         continue
                     self.assertIn(target, docs, (name, href))
-
-    def test_openapi_spec_is_valid_json(self):
-        built, _ = build(pages_to_read=STATIC_JSON)
-        self.assertIn('api/openapi.json', built)
-        spec = json.loads(built['api/openapi.json'])
-        self.assertEqual(spec['openapi'], '3.1.0')
-        self.assertIn('/challenges', spec['paths'])
-        self.assertIn('/challenges/{challengeId}/leaderboard', spec['paths'])
-        self.assertIn('/webhooks', spec['paths'])
                     if parsed.fragment:
                         target_ids = [a.get('id') for _, a in docs[target].nodes]
                         self.assertIn(unquote(parsed.fragment), target_ids, (name, href))
@@ -104,6 +95,15 @@ class InterestFlow(unittest.TestCase):
             self.assertNotIn('856-448-4318', source)
             self.assertNotIn('267-343-9249', source)
             self.assertNotIn('Sparked Live Network Inc.', source)
+
+    def test_openapi_spec_is_valid_json(self):
+        built, _ = build(pages_to_read=STATIC_JSON)
+        self.assertIn('api/openapi.json', built)
+        spec = json.loads(built['api/openapi.json'])
+        self.assertEqual(spec['openapi'], '3.1.0')
+        self.assertIn('/challenges', spec['paths'])
+        self.assertIn('/challenges/{challengeId}/leaderboard', spec['paths'])
+        self.assertIn('/webhooks', spec['paths'])
 
 
 if __name__ == '__main__':
