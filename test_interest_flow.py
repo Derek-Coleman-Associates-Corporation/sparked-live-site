@@ -1,4 +1,5 @@
 """Regression checks for market boundaries, working routes and contact safety."""
+import json
 import unittest
 from html.parser import HTMLParser
 from urllib.parse import urlparse, unquote
@@ -7,6 +8,7 @@ from test_launch_gating import build, HERE
 SLUGS = ['', 'api', 'apply', 'managers', 'invitation-code', 'privacy', 'terms',
          'international', 'shop', 'uk', 'brazil', 'mexico']
 PAGES = [(slug + '/' if slug else '') + 'index.html' for slug in SLUGS]
+STATIC_JSON = ['api/openapi.json']
 
 
 class Document(HTMLParser):
@@ -80,7 +82,18 @@ class InterestFlow(unittest.TestCase):
                     if target.startswith('assets/'):
                         self.assertTrue((HERE / target).is_file(), (name, href))
                         continue
+                    if target in STATIC_JSON:
+                        continue
                     self.assertIn(target, docs, (name, href))
+
+    def test_openapi_spec_is_valid_json(self):
+        built, _ = build(pages_to_read=STATIC_JSON)
+        self.assertIn('api/openapi.json', built)
+        spec = json.loads(built['api/openapi.json'])
+        self.assertEqual(spec['openapi'], '3.1.0')
+        self.assertIn('/challenges', spec['paths'])
+        self.assertIn('/challenges/{challengeId}/leaderboard', spec['paths'])
+        self.assertIn('/webhooks', spec['paths'])
                     if parsed.fragment:
                         target_ids = [a.get('id') for _, a in docs[target].nodes]
                         self.assertIn(unquote(parsed.fragment), target_ids, (name, href))

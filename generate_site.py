@@ -24,6 +24,7 @@ BASE_PATH (URL prefix when served from a subpath, e.g. GitHub project pages).
 """
 
 import html
+import json
 import os
 import shutil
 from pathlib import Path
@@ -353,7 +354,7 @@ def index_body():
 
 def api_body():
     return f"""<section class="hero"><span class="badge">Developer Platform · v1 Preview</span><h1>One API to orchestrate<br>live creator challenges.</h1><p class="lede">Sparked Live provides an AI-powered Challenge Management API that works ancillary to major live social networks including TikTok and Kick.com—standardizing challenge rules, real-time scoring, moderation, and webhooks.</p>
-<a class="btn" href="mailto:{API_EMAIL}?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request API key</a><a class="btn alt" href="#endpoints">View core endpoints</a></section>
+<a class="btn" href="mailto:{API_EMAIL}?subject=Sparked%20Live%20Challenge%20API%20Early%20Access">Request API key</a><a class="btn alt" href="#endpoints">View core endpoints</a><a class="btn alt" href="{u('/api/openapi.json')}">OpenAPI 3.1 spec (JSON)</a></section>
 <div class="note"><strong>Ancillary software architecture:</strong> Sparked Live integrates alongside TikTok and Kick.com through authorized webhooks, OAuth-scoped data, and creator-approved connectors. We never ask for platform passwords and do not represent or act on behalf of Kick.com or TikTok.</div>
 <div class="grid"><article class="card"><span class="eyebrow">01 / Unified Model</span><h2>Cross-network challenge schema</h2><p>Define duration, milestone thresholds, participant rosters, and settlement criteria once—then run synchronized live challenges across TikTok and Kick.com streams.</p></article><article class="card"><span class="eyebrow">02 / AI Verification</span><h2>Automated event scoring &amp; safety</h2><p>AI pipelines parse stream events, score goal progress, flag duplicate or anomalous submissions, and generate concise creator &amp; community recap summaries.</p></article><article class="card"><span class="eyebrow">03 / Event-Driven</span><h2>Real-time webhooks &amp; overlays</h2><p>Push verified state changes to OBS browser overlays, Discord bots, mobile apps, or creator dashboards via HMAC-signed HTTPS webhooks.</p></article></div>
 <h2 id="endpoints">Core REST endpoints</h2>
@@ -596,6 +597,324 @@ for indirect or consequential losses arising from your use of it.</p>
 """ % {"updated": UPDATED, "company": COMPANY, "email": EMAIL, "disclaimer": DISCLAIMER}
 
 
+def build_openapi_spec():
+    """Return the OpenAPI 3.1.0 specification for Sparked Live Challenge Management API."""
+    return {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "Sparked Live Challenge Management API",
+            "version": "1.0.0",
+            "summary": "AI-powered challenge orchestration API working ancillary with TikTok and Kick.com.",
+            "description": (
+                "Sparked Live (operated by Derek Coleman & Associates Inc.) provides an "
+                "independent REST and Webhook API for creating, managing, verifying, and "
+                "scoring live social media creator challenges alongside TikTok and Kick.com. "
+                "Sparked Live is not affiliated with, endorsed by, or sponsored by Kick.com."
+            ),
+            "contact": {
+                "name": "Sparked Live Engineering",
+                "email": API_EMAIL,
+                "url": "https://sparkedlive.com/api/",
+            },
+        },
+        "servers": [
+            {
+                "url": "https://api.sparkedlive.com/v1",
+                "description": "Sparked Live Challenge API v1",
+            }
+        ],
+        "security": [{"bearerAuth": []}],
+        "paths": {
+            "/challenges": {
+                "post": {
+                    "operationId": "createChallenge",
+                    "summary": "Create a live creator challenge",
+                    "description": "Configure a single-network or cross-network challenge across TikTok and Kick.com with AI scoring and moderation rules.",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/ChallengeCreate"}
+                            }
+                        },
+                    },
+                    "responses": {
+                        "201": {
+                            "description": "Challenge created",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/Challenge"}
+                                }
+                            },
+                        }
+                    },
+                },
+                "get": {
+                    "operationId": "listChallenges",
+                    "summary": "List active and scheduled challenges",
+                    "parameters": [
+                        {
+                            "name": "network",
+                            "in": "query",
+                            "schema": {"type": "string", "enum": ["tiktok", "kick"]},
+                        },
+                        {
+                            "name": "status",
+                            "in": "query",
+                            "schema": {"type": "string", "enum": ["draft", "active", "completed"]},
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "List of challenges",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "properties": {
+                                            "data": {
+                                                "type": "array",
+                                                "items": {"$ref": "#/components/schemas/Challenge"},
+                                            }
+                                        },
+                                    }
+                                }
+                            },
+                        }
+                    },
+                },
+            },
+            "/challenges/{challengeId}": {
+                "get": {
+                    "operationId": "getChallenge",
+                    "summary": "Retrieve challenge state and normalized metrics",
+                    "parameters": [
+                        {
+                            "name": "challengeId",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Challenge details",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/Challenge"}
+                                }
+                            },
+                        }
+                    },
+                }
+            },
+            "/challenges/{challengeId}/participants": {
+                "post": {
+                    "operationId": "enrollParticipant",
+                    "summary": "Enroll an authorized creator into a challenge",
+                    "parameters": [
+                        {
+                            "name": "challengeId",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/ParticipantEnroll"}
+                            }
+                        },
+                    },
+                    "responses": {"201": {"description": "Participant enrolled"}},
+                }
+            },
+            "/challenges/{challengeId}/events": {
+                "post": {
+                    "operationId": "ingestChallengeEvent",
+                    "summary": "Ingest a live stream milestone event for AI verification",
+                    "parameters": [
+                        {
+                            "name": "challengeId",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/StreamEvent"}
+                            }
+                        },
+                    },
+                    "responses": {
+                        "202": {
+                            "description": "Event queued and scored",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/AIVerificationResult"}
+                                }
+                            },
+                        }
+                    },
+                }
+            },
+            "/challenges/{challengeId}/leaderboard": {
+                "get": {
+                    "operationId": "getChallengeLeaderboard",
+                    "summary": "Fetch real-time cross-network standings and AI stream highlights",
+                    "parameters": [
+                        {
+                            "name": "challengeId",
+                            "in": "path",
+                            "required": True,
+                            "schema": {"type": "string"},
+                        }
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Current ranked leaderboard",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/LeaderboardResponse"}
+                                }
+                            },
+                        }
+                    },
+                }
+            },
+            "/webhooks": {
+                "post": {
+                    "operationId": "createWebhook",
+                    "summary": "Register an HMAC-signed webhook destination",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/WebhookCreate"}
+                            }
+                        },
+                    },
+                    "responses": {"201": {"description": "Webhook subscription created"}},
+                }
+            },
+        },
+        "components": {
+            "securitySchemes": {
+                "bearerAuth": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "API Key",
+                }
+            },
+            "schemas": {
+                "ChallengeCreate": {
+                    "type": "object",
+                    "required": ["title", "networks", "rules"],
+                    "properties": {
+                        "title": {"type": "string", "example": "Weekend 10K Live Goal"},
+                        "networks": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": ["tiktok", "kick"]},
+                        },
+                        "rules": {
+                            "type": "object",
+                            "properties": {
+                                "metric": {"type": "string", "example": "verified_stream_milestones"},
+                                "window_hours": {"type": "integer", "minimum": 1},
+                                "ai_moderation": {"type": "boolean", "default": True},
+                            },
+                        },
+                        "webhook_url": {"type": "string", "format": "uri"},
+                    },
+                },
+                "Challenge": {
+                    "type": "object",
+                    "properties": {
+                        "id": {"type": "string", "example": "chl_01JFK92814"},
+                        "title": {"type": "string"},
+                        "status": {"type": "string", "enum": ["draft", "active", "completed"]},
+                        "networks": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": ["tiktok", "kick"]},
+                        },
+                        "created_at": {"type": "string", "format": "date-time"},
+                    },
+                },
+                "ParticipantEnroll": {
+                    "type": "object",
+                    "required": ["network", "creator_handle"],
+                    "properties": {
+                        "network": {"type": "string", "enum": ["tiktok", "kick"]},
+                        "creator_handle": {"type": "string", "example": "@sparkedcreator"},
+                        "team_id": {"type": "string"},
+                    },
+                },
+                "StreamEvent": {
+                    "type": "object",
+                    "required": ["network", "creator_handle", "event_type"],
+                    "properties": {
+                        "network": {"type": "string", "enum": ["tiktok", "kick"]},
+                        "creator_handle": {"type": "string"},
+                        "event_type": {"type": "string", "example": "milestone_reached"},
+                        "value": {"type": "number"},
+                        "occurred_at": {"type": "string", "format": "date-time"},
+                    },
+                },
+                "AIVerificationResult": {
+                    "type": "object",
+                    "properties": {
+                        "status": {"type": "string", "enum": ["verified", "flagged", "pending"]},
+                        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+                        "anomaly_flags": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
+                "LeaderboardResponse": {
+                    "type": "object",
+                    "properties": {
+                        "challenge_id": {"type": "string"},
+                        "ai_summary": {"type": "string"},
+                        "standings": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "rank": {"type": "integer"},
+                                    "creator_handle": {"type": "string"},
+                                    "network": {"type": "string"},
+                                    "score": {"type": "number"},
+                                },
+                            },
+                        },
+                    },
+                },
+                "WebhookCreate": {
+                    "type": "object",
+                    "required": ["url", "events"],
+                    "properties": {
+                        "url": {"type": "string", "format": "uri"},
+                        "events": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "challenge.started",
+                                    "challenge.milestone.verified",
+                                    "challenge.completed",
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    }
+
+
 def main():
     slugs = [
         page("", "Sparked Live — AI Social Media Platform & Challenge Management API",
@@ -650,6 +969,9 @@ def main():
         "<a href='%s'>Challenge API</a>, or <a href='%s'>apply to join</a>.</p></main></body></html>"
         % (CSS, u("/"), u("/api/"), u("/apply/")),
         encoding="utf-8")
+
+    (OUT / "api" / "openapi.json").write_text(
+        json.dumps(build_openapi_spec(), indent=2) + "\n", encoding="utf-8")
 
     if BASE_URL:
         urls = "".join(
